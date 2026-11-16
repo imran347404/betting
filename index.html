@@ -1,749 +1,1640 @@
-<!-- START OF FILE user.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BD BETTING TIPS PRO</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tips King — Firebase Admin Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050910;
+      --surface: #0f172a;
+      --card: #152036;
+      --card-alt: #1e293b;
+      --border: #334155;
+      --gold: #ffd700;
+      --amber: #fbbf24;
+      --orange: #ea580c;
+      --cyan: #22d3ee;
+      --green: #22c55e;
+      --red: #ef4444;
+      --purple: #4c1d95;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-    <style>
-        :root { --bg:#050910; --card:#152036; --text:#fff; --gold:#ffd700; --nav:#0f172a; --auth-btn:#ea580c; --bkash:#e2136e; --nagad:#ec1c24; --green:#22c55e; --red:#ef4444; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); height:100vh; overflow-x:hidden; padding-bottom:80px; }
-        
-        /* AUTH & BASIC UI */
-        .auth-container { padding:30px; height:100vh; display:none; flex-direction:column; justify-content:center; }
-        .auth-input { width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:15px; border-radius:10px; margin-bottom:15px; outline:none; }
-        .auth-btn { width:100%; padding:15px; background:var(--auth-btn); color:white; border:none; border-radius:30px; font-weight:bold; cursor:pointer; }
-        .fancy-title { font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 30px; background: linear-gradient(to right, #ffd700, #ea580c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 0px 20px rgba(234, 88, 12, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+    .stack-sm { display: flex; flex-direction: column; gap: 10px; }
 
-        /* NEW LOGIN STYLES */
-        .top-brand-text {
-            background: linear-gradient(to right, #facc15, #ea580c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.8rem;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            line-height: 1.2;
-        }
-        .create-acc-btn {
-            color: #22d3ee;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            border-bottom: 1px dashed #22d3ee;
-            padding-bottom: 2px;
-            transition: 0.3s;
-        }
-        .create-acc-btn:hover { color:white; border-color:white; }
+    .brand-badge {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.8px;
+    }
+    .brand-badge span { color: var(--gold); }
 
-        /* MAIN APP */
-        #main-app { display:none; }
-        header { background:rgba(5,9,16,0.95); padding:15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; border-bottom:1px solid #333; }
-        .balance-box { background:linear-gradient(45deg, #1e3a8a, #2563eb); padding:5px 15px; border-radius:20px; font-weight:bold; }
-        
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:20px; }
-        .card { background:var(--card); padding:20px 15px; border-radius:15px; border:1px solid #333; position:relative; min-height:120px; }
-        .badge { position:absolute; top:10px; right:10px; background:var(--gold); color:black; padding:2px 8px; border-radius:5px; font-size:0.7rem; font-weight:bold; }
-        .card-icon { font-size:2rem; color:var(--gold); margin-bottom:10px; }
-        
-        /* PAYMENT */
-        .method-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:20px; }
-        .pay-method { background:white; padding:10px; border-radius:10px; text-align:center; color:black; font-weight:bold; cursor:pointer; }
-        .payment-form { display:none; background:white; color:black; margin:20px; border-radius:15px; overflow:hidden; }
-        .pay-head { background:var(--bkash); color:white; padding:15px; text-align:center; font-weight:bold; }
-        .pay-body { padding:20px; }
-        .inp-grp { margin-bottom:15px; }
-        .inp-grp label { display:block; font-size:0.9rem; margin-bottom:5px; font-weight:600; }
-        .inp-grp input { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
-        
-        /* HISTORY LIST */
-        .history-section { padding: 0 20px 20px; }
-        .hist-card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .hist-status { padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .st-pending { background: #facc15; color: black; }
-        .st-approved { background: var(--green); color: white; }
-        .st-rejected { background: var(--red); color: white; }
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: radial-gradient(circle at top, rgba(91, 33, 182, 0.35), var(--bg) 60%);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 470px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .auth-card h1 { margin: 10px 0 6px; font-size: 24px; }
+    .status-box {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 14px 0;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--gold);
+    }
 
-        /* BOTTOM NAV */
-        .bottom-nav { position:fixed; bottom:0; width:100%; background:var(--nav); border-top:1px solid #333; display:flex; justify-content:space-around; padding:10px 0; }
-        .nav-item { display:flex; flex-direction:column; align-items:center; color:#64748b; font-size:0.8rem; }
-        .nav-item.active { color:var(--gold); }
-        .view-section { display:none; } .view-section.active { display:block; }
+    input, select, textarea {
+      width: 100%;
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
 
-        /* MATCH OVERLAY & CARDS */
-        #match-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#3b0764; z-index:1000; overflow-y:auto; padding:20px; }
-        
-        .date-group-container { background: #5b21b6; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .date-header { text-align: center; font-size: 1.2rem; color: white; font-weight: 500; margin-bottom: 10px; }
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    .divider span { padding: 0 10px; }
 
-        .slip-card { background: linear-gradient(135deg, #4c1d95, #6d28d9); border: 2px solid #22c55e; border-radius: 12px; padding: 10px; margin-bottom: 8px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; }
-        .slip-card.lost { border-color: #ef4444; }
-        .match-content { transition: 0.3s; }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-gold { background: var(--gold); color: #000; }
+    .btn-secondary { background: var(--card-alt); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: rgba(239, 68, 68, 0.16); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn-icon { background: transparent; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
 
-        .slip-card.locked-state { border-color: #fb923c !important; }
-        .slip-card.locked-state .match-content { filter: blur(5px); opacity: 0.6; pointer-events: none; user-select: none; }
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .pill-green { background: rgba(34, 197, 94, 0.18); color: var(--green); }
+    .pill-gold { background: rgba(255, 215, 0, 0.18); color: var(--gold); }
+    .pill-red { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+    .pill-cyan { background: rgba(34, 211, 238, 0.16); color: var(--cyan); }
 
-        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.1); }
+    .admin-shell { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 18px 14px;
+      flex-shrink: 0;
+    }
+    .sidebar-top { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 16px; }
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+    }
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.04); color: var(--text); }
+    .nav-item.active {
+      background: rgba(255, 215, 0, 0.14);
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .sidebar-footer { padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
 
-        .slip-league { color: #facc15; font-size: 0.75rem; font-weight: bold; }
-        .slip-teams { color: white; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
-        .vs-text { color: #9ca3af; font-size: 0.8em; margin: 0 5px; font-weight: 400; }
-        
-        .status-badge { font-weight: 800; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.3); display: inline-block; }
-        .st-won { color: #22c55e; } .st-lost { color: #ef4444; } .st-pending { color: #facc15; }
+    .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      background: rgba(15, 23, 42, 0.92);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar h2 { margin: 0; font-size: 18px; }
+    .section-container { padding: 24px; max-width: 1320px; width: 100%; margin: 0 auto; }
 
-        .info-box { background: rgba(0,0,0,0.25); padding: 5px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        .info-box div { font-size: 0.85rem !important; }
-        .total-odds-footer { background: #2e1065; color: white; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; margin-top: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-card, .panel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); }
+    .stat-value { font-size: 26px; font-weight: 800; color: var(--gold); margin-top: 6px; }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
 
-        .unlock-btn { background: linear-gradient(90deg, #fbbf24, #ea580c); color: #000; font-weight: 800; font-size: 0.9rem; border: none; padding: 8px 20px; border-radius: 25px; cursor: pointer; width: 80%; margin: 5px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .actions-cell { display: flex; flex-wrap: wrap; gap: 6px; }
 
-        /* POPUP MODAL & UPDATE MODAL */
-        #popup-modal, #update-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(5px); animation: popIn 0.3s ease-out; }
-        /* UPDATE MODAL SPECIFIC: HIGH Z-INDEX & SOLID BG */
-        #update-modal { background: #000; z-index: 9999; }
-        
-        @keyframes popIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
-        .popup-content { background: linear-gradient(135deg, #1e293b, #0f172a); width: 85%; max-width: 400px; padding: 30px 20px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; position: relative; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); }
-        .popup-close { position: absolute; top: -15px; right: -15px; background: #ef4444; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid white; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .popup-title { color: var(--gold); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .popup-body { color: #e2e8f0; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
-        .toast { position:fixed; bottom:50px; left:50%; transform:translateX(-50%); background:#e11d48; color:#fff; padding:12px 25px; border-radius:30px; opacity:0; pointer-events:none; transition:0.3s; z-index:3000; width:max-content; font-weight:600; }
-        .toast.show { opacity:1; bottom:100px; }
+    .alert, .toast {
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin: 12px 24px 0;
+      font-size: 13px;
+    }
+    .alert-error { background: rgba(239, 68, 68, 0.16); border: 1px solid var(--red); color: #fecaca; margin: 12px 0; }
+    .toast { background: rgba(34, 197, 94, 0.18); border: 1px solid var(--green); color: #bbf7d0; }
+    .toast.error { background: rgba(239, 68, 68, 0.18); border-color: var(--red); color: #fecaca; }
 
-        /* LIVE NOTIFICATION STYLES */
-        .live-notify {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
-            color: white; padding: 8px 18px; border-radius: 30px;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-            border: 1px solid var(--gold);
-            z-index: 9999;
-            opacity: 0; pointer-events: none; transition: 0.5s;
-            width: max-content; max-width: 90%;
-            font-size: 0.8rem;
-        }
-        .live-notify.active { opacity: 1; top: 75px; } /* Shows below header */
-        .live-notify i { color: var(--green); }
-        .live-avatar { width: 25px; height: 25px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #aaa; font-weight: bold; }
-    </style>
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .modal-header h3 { margin: 0; color: var(--gold); }
+
+    .mobile-only { display: none; }
+    @media (max-width: 900px) {
+      .mobile-only { display: inline-flex; }
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        z-index: 50;
+        transition: left 0.25s ease;
+      }
+      .sidebar.open { left: 0; }
+      .section-container { padding: 16px; }
+    }
+  </style>
 </head>
 <body>
+  <!-- Auth Gate -->
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand-badge">TIPS <span>KING</span> ADMIN</div>
+      <h1>Control Center</h1>
+      <p class="muted small">
+        Connected directly to Firebase project <code>gen-lang-client-0348449679</code> and Firestore database
+        <code>ai-studio-android-bdtipski-65a2f596-fcb8-419b-a733-80c9708133ef</code>.
+      </p>
 
-    <!-- Auth Views -->
-    <div id="login-view" class="auth-container">
-        <h2 class="top-brand-text">100% Fixed Football Match</h2>
-        <h2 style="text-align:center; margin-bottom:20px; color:white;">USER LOGIN</h2>
-        <input type="email" class="auth-input" id="le" placeholder="Email">
-        <input type="password" class="auth-input" id="lp" placeholder="Password">
-        <button class="auth-btn" onclick="login()">LOGIN</button>
-        <p style="text-align:center; margin-top:25px; color:#aaa;">
-            Don't have an account? <br>
-            <span class="create-acc-btn" onclick="showReg()">Create Account</span>
-        </p>
+      <div class="status-box">
+        <div><strong>Firebase SDK Ready</strong> — Pre-configured for Tips King Global.</div>
+        <label class="checkbox-row" style="margin-top:8px;">
+          <input id="cfg-use-emulator" type="checkbox" />
+          <span>Developer Mode: Use Local Emulators (:9099 / :8085)</span>
+        </label>
+      </div>
+
+      <div id="auth-error" class="alert alert-error hidden"></div>
+
+      <button id="google-login-btn" type="button" class="btn btn-primary btn-block">
+        Sign In with Google (Admin)
+      </button>
+
+      <div class="divider"><span>OR EMAIL &amp; PASSWORD</span></div>
+
+      <form id="email-login-form" class="stack-sm">
+        <input id="login-email" type="email" placeholder="Admin email (e.g. mi6335705@gmail.com)" required />
+        <input id="login-password" type="password" placeholder="Password" required />
+        <button type="submit" class="btn btn-secondary btn-block">Sign In with Email</button>
+      </form>
     </div>
+  </section>
 
-    <div id="reg-view" class="auth-container">
-        <h1 class="fancy-title">Create<br>Account</h1>
-        <input type="text" class="auth-input" id="rn" placeholder="Full Name">
-        <input type="email" class="auth-input" id="re" placeholder="Email (ex: name@gmail.com)">
-        <input type="password" class="auth-input" id="rp" placeholder="Password">
-        <button class="auth-btn" onclick="reg()">REGISTER</button>
-        <p style="text-align:center; margin-top:20px; color:#aaa;" onclick="showLog()">Back to Login</p>
+  <!-- Main Admin Shell -->
+  <div id="admin-shell" class="admin-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-badge">TIPS <span>KING</span></div>
+        <button id="close-sidebar-btn" type="button" class="btn-icon mobile-only" aria-label="Close menu">&times;</button>
+      </div>
+      <nav id="sidebar-nav" class="sidebar-nav">
+        <button data-section="dashboard" class="nav-item active">Dashboard</button>
+        <button data-section="users" class="nav-item">Users &amp; Coins</button>
+        <button data-section="matches" class="nav-item">Matches &amp; Tips</button>
+        <button data-section="categories" class="nav-item">Categories</button>
+        <button data-section="packages" class="nav-item">Coin Packages</button>
+        <button data-section="transactions" class="nav-item">Transactions &amp; Play</button>
+        <button data-section="unlocks" class="nav-item">Unlocked Matches</button>
+        <button data-section="notifications" class="nav-item">Notifications</button>
+        <button data-section="sliders" class="nav-item">Sliders &amp; Banners</button>
+        <button data-section="popup" class="nav-item">Popup Announcement</button>
+        <button data-section="settings" class="nav-item">App &amp; Share Settings</button>
+        <button data-section="support" class="nav-item">Support Links</button>
+        <button data-section="legal" class="nav-item">Privacy / Terms / About</button>
+        <button data-section="analytics" class="nav-item">Analytics</button>
+        <button data-section="logs" class="nav-item">Admin Logs</button>
+        <button data-section="admins" class="nav-item">Security &amp; Admins</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div id="admin-identity" class="small muted"></div>
+        <button id="logout-btn" type="button" class="btn btn-danger btn-sm btn-block">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="open-sidebar-btn" type="button" class="btn-icon mobile-only" aria-label="Menu">&#9776;</button>
+          <h2 id="section-title">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <span id="connection-pill" class="pill pill-green">Live Firestore</span>
+        </div>
+      </header>
+
+      <div id="toast-banner" class="toast hidden"></div>
+      <div id="section-container" class="section-container"></div>
+    </main>
+  </div>
+
+  <!-- Reusable Modal -->
+  <div id="modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Modal</h3>
+        <button id="modal-close-btn" type="button" class="btn-icon">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
     </div>
+  </div>
 
-    <div id="popup-modal">
-        <div class="popup-content">
-            <div class="popup-close" onclick="closePopup()"><i class="fas fa-times"></i></div>
-            <div id="pop-title" class="popup-title">NOTICE</div>
-            <div id="pop-body" class="popup-body">Welcome to BD Betting Tips Pro!</div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      connectAuthEmulator,
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getFirestore,
+      connectFirestoreEmulator,
+      collection,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      deleteDoc,
+      onSnapshot,
+      runTransaction,
+      serverTimestamp,
+      query,
+      orderBy,
+      limit,
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import {
+      getStorage,
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL,
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+    // Firebase Web App configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdZA-V_HtAcfehgMxxEOEP5sq2Q-ClZdY",
+      authDomain: "gen-lang-client-0348449679.firebaseapp.com",
+      databaseURL: "https://gen-lang-client-0348449679-default-rtdb.firebaseio.com",
+      projectId: "gen-lang-client-0348449679",
+      storageBucket: "gen-lang-client-0348449679.firebasestorage.app",
+      messagingSenderId: "671546900981",
+      appId: "1:671546900981:web:c8f8b15cc05bcfbcf3e0bc",
+    };
+
+    const DATABASE_ID = "ai-studio-android-bdtipski-65a2f596-fcb8-419b-a733-80c9708133ef";
+    const EMU_FLAG_KEY = "tipsking_admin_use_emulator";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app, DATABASE_ID);
+    const storage = getStorage(app);
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) =>
+      String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    const useEmulator = localStorage.getItem(EMU_FLAG_KEY) === "1" || new URLSearchParams(location.search).get("emulator") === "1";
+    $("cfg-use-emulator").checked = useEmulator;
+    if (useEmulator) {
+      connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+      connectFirestoreEmulator(db, "127.0.0.1", 8085);
+      $("connection-pill").textContent = "Emulator";
+      $("connection-pill").className = "pill pill-gold";
+    }
+    $("cfg-use-emulator").onchange = (e) => {
+      localStorage.setItem(EMU_FLAG_KEY, e.target.checked ? "1" : "0");
+      location.reload();
+    };
+
+    const store = {
+      user: null,
+      section: "dashboard",
+      users: [],
+      categories: [],
+      matches: [],
+      packages: [],
+      transactions: [],
+      verifications: [],
+      sliders: [],
+      notifications: [],
+      logs: [],
+      admins: [],
+      settings: { app: {}, support: {}, popup: {}, legal: {} },
+      unsubs: [],
+      userSearch: "",
+    };
+
+    function toast(msg, isError = false) {
+      const el = $("toast-banner");
+      el.textContent = msg;
+      el.className = `toast${isError ? " error" : ""}`;
+      setTimeout(() => el.classList.add("hidden"), 4200);
+    }
+
+    function showModal(title, html, onBind) {
+      $("modal-title").textContent = title;
+      $("modal-body").innerHTML = html;
+      $("modal-backdrop").classList.remove("hidden");
+      if (onBind) onBind();
+    }
+
+    function closeModal() {
+      $("modal-backdrop").classList.add("hidden");
+    }
+
+    $("modal-close-btn").onclick = closeModal;
+    $("modal-backdrop").onclick = (e) => {
+      if (e.target === $("modal-backdrop")) closeModal();
+    };
+
+    async function verifyAdminAccess(user) {
+      if (!user) return false;
+      if (user.email === "mi6335705@gmail.com" && user.emailVerified) return true;
+      try {
+        const snap = await getDoc(doc(db, "admins", user.uid));
+        return snap.exists();
+      } catch {
+        return false;
+      }
+    }
+
+    async function logAdminAction(user, action, targetType, targetId, details) {
+      if (!user) return;
+      const logId = `log_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      try {
+        await setDoc(doc(db, "adminLogs", logId), {
+          adminUid: user.uid,
+          adminEmail: (user.email || "admin").slice(0, 160),
+          action: String(action).slice(0, 80),
+          targetType: String(targetType).slice(0, 60),
+          targetId: String(targetId || "").slice(0, 128),
+          details: String(details || "").slice(0, 500),
+          createdAt: serverTimestamp(),
+        });
+      } catch (e) {
+        console.warn("Admin log skipped:", e);
+      }
+    }
+
+    async function uploadBannerImage(folder, file) {
+      const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const fileRef = storageRef(storage, `${folder}/${Date.now()}_${cleanName}`);
+      await uploadBytes(fileRef, file);
+      return getDownloadURL(fileRef);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      clearListeners();
+      if (!user) {
+        store.user = null;
+        $("auth-screen").classList.remove("hidden");
+        $("admin-shell").classList.add("hidden");
+        return;
+      }
+      const allowed = await verifyAdminAccess(user);
+      if (!allowed) {
+        $("auth-error").textContent = `Access denied for ${user.email || user.uid}. Only verified admins in /admins can access this panel.`;
+        $("auth-error").classList.remove("hidden");
+        await signOut(auth);
+        return;
+      }
+      store.user = user;
+      $("auth-error").classList.add("hidden");
+      $("admin-identity").textContent = `${user.displayName || "Admin"} (${user.email || user.uid})`;
+      $("auth-screen").classList.add("hidden");
+      $("admin-shell").classList.remove("hidden");
+      subscribeAll();
+      renderSection();
+    });
+
+    $("google-login-btn").onclick = async () => {
+      $("auth-error").classList.add("hidden");
+      try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+      } catch (err) {
+        $("auth-error").textContent = err.message || "Google sign-in failed.";
+        $("auth-error").classList.remove("hidden");
+      }
+    };
+
+    $("email-login-form").onsubmit = async (e) => {
+      e.preventDefault();
+      $("auth-error").classList.add("hidden");
+      try {
+        await signInWithEmailAndPassword(auth, $("login-email").value.trim(), $("login-password").value);
+      } catch (err) {
+        $("auth-error").textContent = err.message || "Email sign-in failed.";
+        $("auth-error").classList.remove("hidden");
+      }
+    };
+
+    $("logout-btn").onclick = () => signOut(auth);
+    $("open-sidebar-btn").onclick = () => $("sidebar").classList.add("open");
+    $("close-sidebar-btn").onclick = () => $("sidebar").classList.remove("open");
+    $("sidebar-nav").onclick = (e) => {
+      const btn = e.target.closest(".nav-item");
+      if (!btn) return;
+      document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+      btn.classList.add("active");
+      store.section = btn.dataset.section;
+      $("section-title").textContent = btn.textContent;
+      $("sidebar").classList.remove("open");
+      renderSection();
+    };
+
+    function clearListeners() {
+      store.unsubs.forEach((u) => u());
+      store.unsubs = [];
+    }
+
+    function subscribeAll() {
+      const watchCol = (colName, targetKey, maxDocs = 200) => {
+        const unsub = onSnapshot(query(collection(db, colName), limit(maxDocs)), (snap) => {
+          store[targetKey] = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          if (shouldRefreshOnUpdate(targetKey)) renderSection();
+        });
+        store.unsubs.push(unsub);
+      };
+
+      watchCol("users", "users", 300);
+      watchCol("categories", "categories", 100);
+      watchCol("matches", "matches", 300);
+      watchCol("coinPackages", "packages", 50);
+      watchCol("coinTransactions", "transactions", 300);
+      watchCol("purchaseVerifications", "verifications", 200);
+      watchCol("sliders", "sliders", 50);
+      watchCol("notifications", "notifications", 200);
+      watchCol("admins", "admins", 50);
+
+      const logsUnsub = onSnapshot(query(collection(db, "adminLogs"), orderBy("createdAt", "desc"), limit(150)), (snap) => {
+        store.logs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        if (store.section === "logs") renderSection();
+      });
+      store.unsubs.push(logsUnsub);
+
+      ["app", "support", "popup", "legal"].forEach((key) => {
+        const unsub = onSnapshot(doc(db, "settings", key), (snap) => {
+          store.settings[key] = snap.exists() ? snap.data() : {};
+          if (["settings", "support", "popup", "legal"].includes(store.section)) renderSection();
+        });
+        store.unsubs.push(unsub);
+      });
+    }
+
+    function shouldRefreshOnUpdate(key) {
+      const map = {
+        dashboard: ["users", "matches", "categories", "transactions", "verifications"],
+        analytics: ["users", "matches", "categories", "transactions", "verifications"],
+        users: ["users"],
+        matches: ["matches", "categories"],
+        categories: ["categories", "matches"],
+        packages: ["packages"],
+        transactions: ["transactions", "verifications"],
+        unlocks: ["transactions", "matches", "users"],
+        notifications: ["notifications"],
+        sliders: ["sliders"],
+        admins: ["admins"],
+      };
+      return (map[store.section] || []).includes(key);
+    }
+
+    function renderSection() {
+      const container = $("section-container");
+      switch (store.section) {
+        case "dashboard": return renderDashboard(container);
+        case "users": return renderUsers(container);
+        case "matches": return renderMatches(container);
+        case "categories": return renderCategories(container);
+        case "packages": return renderPackages(container);
+        case "transactions": return renderTransactions(container);
+        case "unlocks": return renderUnlocks(container);
+        case "notifications": return renderNotifications(container);
+        case "sliders": return renderSliders(container);
+        case "popup": return renderPopupSettings(container);
+        case "settings": return renderAppSettings(container);
+        case "support": return renderSupportSettings(container);
+        case "legal": return renderLegalSettings(container);
+        case "analytics": return renderAnalytics(container);
+        case "logs": return renderLogs(container);
+        case "admins": return renderAdmins(container);
+      }
+    }
+
+    function renderDashboard(el) {
+      const totalUsers = store.users.length;
+      const activeUsers = store.users.filter((u) => u.accountStatus === "active").length;
+      const publishedMatches = store.matches.filter((m) => m.isPublished).length;
+      const vipMatches = store.matches.filter((m) => m.isVip).length;
+      const totalUnlocks = store.transactions.filter((t) => t.type === "match_unlock").length;
+      const coinsPurchased = store.transactions
+        .filter((t) => t.type === "purchase" && t.amount > 0)
+        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+
+      el.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">Registered Users</div><div class="stat-value">${totalUsers}</div></div>
+          <div class="stat-card"><div class="stat-label">Active Accounts</div><div class="stat-value">${activeUsers}</div></div>
+          <div class="stat-card"><div class="stat-label">Published Matches</div><div class="stat-value">${publishedMatches}</div></div>
+          <div class="stat-card"><div class="stat-label">VIP Matches</div><div class="stat-value">${vipMatches}</div></div>
+          <div class="stat-card"><div class="stat-label">Total VIP Unlocks</div><div class="stat-value">${totalUnlocks}</div></div>
+          <div class="stat-card"><div class="stat-label">Verified Coins Purchased</div><div class="stat-value">${coinsPurchased}</div></div>
         </div>
-    </div>
-    
-    <div id="update-modal">
-        <div class="popup-content" style="border-color: #ef4444;">
-            <div style="font-size: 3rem; color: #ef4444; margin-bottom: 10px;"><i class="fas fa-cloud-download-alt"></i></div>
-            <div class="popup-title" style="color: #ef4444;">UPDATE REQUIRED</div>
-            <div class="popup-body" style="margin-bottom: 20px;">
-                A new version of this app is available.<br>Please update to continue using.
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 style="margin:0;">Quick Setup &amp; Global Catalog Bootstrap</h3>
+              <p class="small muted" style="margin:4px 0 0;">
+                Initialize the 8 global categories (FREE + VIP), 5 Google Play Coin Packages (100/200/500/1000/2000), and default Tips King settings.
+              </p>
             </div>
-            <button class="auth-btn" id="update-btn" style="background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);">UPDATE NOW</button>
+            <button id="seed-defaults-btn" class="btn btn-gold">Seed Initial Categories &amp; Packages</button>
+          </div>
+          <p class="small muted">Edit the <code>YOUR_PLAY_PRODUCT_ID_*</code> SKUs in <strong>Coin Packages</strong> to match your Google Play Console in-app products.</p>
         </div>
-    </div>
+      `;
+      $("seed-defaults-btn").onclick = seedDefaults;
+    }
 
-    <!-- LIVE NOTIFICATION POPUP -->
-    <div id="liveNotif" class="live-notify">
-        <div class="live-avatar" id="lnAvatar">A</div>
-        <div style="line-height: 1.2;">
-            <div style="font-weight: bold; color: var(--gold);" id="lnUser">User</div>
-            <div style="color: #ccc; font-size: 0.75rem;">Unlocked <span id="lnCat" style="color:white;">Match</span> for <span id="lnPrice" style="color:#22d3ee;">৳500</span> <i class="fas fa-check-circle"></i></div>
+    async function seedDefaults() {
+      try {
+        const defaultCategories = [
+          { id: "daily_tips", name: "Daily Tips", slug: "daily_tips", section: "free", iconKey: "futbol", sortOrder: 1 },
+          { id: "safe_picks", name: "Safe Picks", slug: "safe_picks", section: "free", iconKey: "shield", sortOrder: 2 },
+          { id: "over_under", name: "Over / Under", slug: "over_under", section: "free", iconKey: "chart", sortOrder: 3 },
+          { id: "vip_fixed", name: "VIP Fixed Tips", slug: "vip_fixed", section: "vip", iconKey: "lock", sortOrder: 4 },
+          { id: "correct_score", name: "Correct Score VIP", slug: "correct_score", section: "vip", iconKey: "bullseye", sortOrder: 5 },
+          { id: "ht_ft", name: "HT / FT VIP", slug: "ht_ft", section: "vip", iconKey: "clock", sortOrder: 6 },
+          { id: "vip_combo", name: "VIP Combo", slug: "vip_combo", section: "vip", iconKey: "layers", sortOrder: 7 },
+          { id: "daily_vip_special", name: "Daily VIP Special", slug: "daily_vip_special", section: "vip", iconKey: "trophy", sortOrder: 8 },
+        ];
+        for (const c of defaultCategories) {
+          await setDoc(doc(db, "categories", c.id), {
+            ...c,
+            isActive: true,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+        }
+
+        const defaultPackages = [
+          { id: "pkg_100", title: "100 Coins", coins: 100, productId: "YOUR_PLAY_PRODUCT_ID_100", displayPrice: "$0.99", badgeText: "Starter", sortOrder: 1 },
+          { id: "pkg_200", title: "200 Coins", coins: 200, productId: "YOUR_PLAY_PRODUCT_ID_200", displayPrice: "$1.99", badgeText: "", sortOrder: 2 },
+          { id: "pkg_500", title: "500 Coins", coins: 500, productId: "YOUR_PLAY_PRODUCT_ID_500", displayPrice: "$4.99", badgeText: "Popular", sortOrder: 3 },
+          { id: "pkg_1000", title: "1000 Coins", coins: 1000, productId: "YOUR_PLAY_PRODUCT_ID_1000", displayPrice: "$8.99", badgeText: "Best Value", sortOrder: 4 },
+          { id: "pkg_2000", title: "2000 Coins", coins: 2000, productId: "YOUR_PLAY_PRODUCT_ID_2000", displayPrice: "$16.99", badgeText: "VIP Pack", sortOrder: 5 },
+        ];
+        for (const p of defaultPackages) {
+          await setDoc(doc(db, "coinPackages", p.id), {
+            ...p,
+            isVisible: true,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+        }
+
+        await setDoc(doc(db, "settings", "app"), {
+          appName: "Tips King",
+          currentVersionName: "1.0",
+          currentVersionCode: 1,
+          minSupportedVersionCode: 1,
+          minSupportedVersionName: "1.0",
+          updateMessage: "A new version of Tips King is available on Google Play.",
+          updateUrl: "https://play.google.com/store/apps/details?id=com.aistudio.bdtipsking.kxmpzq",
+          shareMessage: "Check out Tips King for daily global football match insights & VIP tips!",
+          maintenanceMode: false,
+          maintenanceMessage: "Scheduled maintenance in progress.",
+          allowAdminBypass: true,
+          sliderEnabled: true,
+          sliderIntervalMs: 4500,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+
+        await logAdminAction(store.user, "seed_defaults", "catalog", "initial", "Seeded 8 categories, 5 coin packages, and Tips King app settings");
+        toast("Seeded initial categories, coin packages, and Tips King settings.");
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
+
+    function renderUsers(el) {
+      const searchVal = (store.userSearch || "").toLowerCase();
+      const filtered = store.users.filter((u) =>
+        !searchVal ||
+        (u.displayName || "").toLowerCase().includes(searchVal) ||
+        (u.email || "").toLowerCase().includes(searchVal) ||
+        u.id.toLowerCase().includes(searchVal)
+      );
+
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Users (${filtered.length})</h3>
+            <input id="user-search-input" style="max-width:300px;" placeholder="Search name, email, or UID..." value="${esc(store.userSearch || "")}" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User</th><th>Coins</th><th>Unlocked</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${filtered.map((u) => `
+                  <tr>
+                    <td><strong>${esc(u.displayName)}</strong><br><span class="small muted">${esc(u.email)}</span><br><code class="small">${esc(u.id)}</code></td>
+                    <td><span class="pill pill-gold">${u.coinBalance ?? 0}</span></td>
+                    <td>${u.unlockedCount ?? 0}</td>
+                    <td><span class="pill ${u.accountStatus === "active" ? "pill-green" : "pill-red"}">${esc(u.accountStatus)}</span></td>
+                    <td class="actions-cell">
+                      <button class="btn btn-gold btn-sm" data-adjust-uid="${esc(u.id)}">Adjust Coins</button>
+                      <button class="btn btn-secondary btn-sm" data-toggle-status="${esc(u.id)}">${u.accountStatus === "active" ? "Ban/Disable" : "Activate"}</button>
+                    </td>
+                  </tr>
+                `).join("") || `<tr><td colspan="5" class="muted">No users found.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
         </div>
-    </div>
+      `;
 
-    <!-- Main App -->
-    <div id="main-app">
-        <header>
-            <div style="font-weight:bold; font-size:1.2rem;">BD BETTING <span style="color:var(--gold);">KING</span></div>
-            <div class="balance-box"><i class="fas fa-wallet"></i> <span id="bal">৳ 0</span></div>
-        </header>
+      $("user-search-input").oninput = (e) => {
+        store.userSearch = e.target.value;
+        renderUsers(el);
+      };
+      el.querySelectorAll("[data-adjust-uid]").forEach((b) => {
+        b.onclick = () => openCoinAdjustModal(b.dataset.adjustUid);
+      });
+      el.querySelectorAll("[data-toggle-status]").forEach((b) => {
+        b.onclick = () => toggleUserStatus(b.dataset.toggleStatus);
+      });
+    }
 
-        <!-- Home -->
-        <div id="home-view" class="view-section active">
-            <h4 style="padding:15px 20px 0; color:#888;">FREE TIPS</h4>
-            <div class="grid-2">
-                <div class="card" onclick="openM('daily_odds', 'Daily Odds')"><span class="badge" style="background:#555; color:white;">FREE</span><i class="far fa-futbol card-icon"></i><br>2+ Daily Odds</div>
-                <div class="card" onclick="openM('unov_tips', 'UN/OV Tips')"><span class="badge" style="background:#555; color:white;">FREE</span><i class="fas fa-chart-line card-icon"></i><br>Over/Under</div>
-            </div>
-            <h4 style="padding:0 20px; color:var(--gold);">VIP PREMIUM</h4>
-            <div class="grid-2">
-                <div class="card" onclick="openM('fixed', 'Fixed Match')"><span class="badge">VIP</span><i class="fas fa-lock card-icon"></i><br>100% Fixed</div>
-                <div class="card" onclick="openM('cs', 'Correct Score')"><span class="badge">VIP</span><i class="fas fa-bullseye card-icon"></i><br>Correct Score</div>
-                <div class="card" onclick="openM('htft', 'HT/FT')"><span class="badge">VIP</span><i class="fas fa-clock card-icon"></i><br>HT/FT VIP</div>
-                <div class="card" onclick="openM('combo', 'Mega Combo')"><span class="badge">VIP</span><i class="fas fa-layer-group card-icon"></i><br>Mega Combo</div>
-            </div>
-        </div>
-
-        <!-- Add Money -->
-        <div id="money-view" class="view-section">
-            <h2 style="text-align:center; margin-top:20px;">Payment Method</h2>
-            <div class="method-grid">
-                <div class="pay-method" onclick="pay('bkash')" style="color:#e2136e;">bKash</div>
-                <div class="pay-method" onclick="pay('nagad')" style="color:#ec1c24;">Nagad</div>
-                <div class="pay-method" onclick="pay('rocket')" style="color:#8c3494;">Rocket</div>
-            </div>
-            
-            <div id="pForm" class="payment-form">
-                <div class="pay-head" id="pHead">Transaction Details</div>
-                <div class="pay-body">
-                    <p style="background:#eee; padding:10px; border-radius:5px; font-size:0.9rem; margin-bottom:15px;">
-                        • Send Money to: <b id="pNum">...</b><br>
-                        • Dial <b id="pDial">*247#</b>
-                    </p>
-                    <div class="inp-grp">
-                        <label>Payment Number (যে নাম্বার থেকে পাঠিয়েছেন)</label>
-                        <input type="number" id="pNumSender" placeholder="017xxxxxxxx">
-                    </div>
-                    <div class="inp-grp">
-                        <label>Amount (Min: 100)</label>
-                        <input type="number" id="pAmount" placeholder="Ex: 500">
-                    </div>
-                    <div class="inp-grp">
-                        <label>Transaction ID</label>
-                        <input type="text" id="pTrx" placeholder="Ex: 8XF20...">
-                    </div>
-                    <button class="auth-btn" id="pBtn" style="border-radius:10px;" onclick="subDep()">VERIFY PAYMENT</button>
-                </div>
-            </div>
-
-            <!-- Deposit History Section -->
-            <div style="margin-top: 30px; padding: 0 20px;">
-                <h3 style="margin-bottom: 15px; border-left: 4px solid var(--gold); padding-left: 10px;">Deposit History</h3>
-            </div>
-            <div id="historyList" class="history-section">
-                <p style="text-align:center; color:#666;">No history found</p>
-            </div>
-        </div>
-
-        <!-- Profile -->
-        <div id="me-view" class="view-section" style="padding:20px;">
-            <div style="text-align:center; margin-bottom:30px;">
-                <div style="width:80px; height:80px; background:#333; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:2rem;"><i class="fas fa-user"></i></div>
-                <h3 id="uName">User</h3>
-                <p style="color:#888;">ID: <span id="uId">...</span></p>
-            </div>
-            <div style="background:#1e293b; border-radius:15px;">
-                <div style="padding:15px; border-bottom:1px solid #333;" onclick="window.open(conf.contact)">Admin Contact <i class="fas fa-chevron-right" style="float:right;"></i></div>
-                <div style="padding:15px; border-bottom:1px solid #333;" onclick="window.open(conf.telegram)">Telegram Channel <i class="fas fa-chevron-right" style="float:right;"></i></div>
-                <div style="padding:15px;" onclick="logout()">Logout <i class="fas fa-sign-out-alt" style="float:right;"></i></div>
-            </div>
-        </div>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="tab('home-view', this)"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" onclick="tab('money-view', this)"><i class="fas fa-wallet"></i>Add Money</div>
-            <div class="nav-item" onclick="tab('me-view', this)"><i class="fas fa-user"></i>Me</div>
-        </nav>
-    </div>
-
-    <!-- Matches Overlay -->
-    <div id="match-overlay">
-        <div style="display:flex; justify-content:space-between; color:white; margin-bottom:20px; align-items:center;">
-            <button onclick="closeM()" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:5px;"><i class="fas fa-arrow-left"></i> Back</button>
-            <h3 id="mTitle">Tips</h3>
-            <div style="width:30px"></div>
-        </div>
-        <div id="mList"></div>
-    </div>
-
-    <div id="toast" class="toast">Message</div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCHo2cOc22YdYamkCKM7puFDS2MhEyMwms",
-            authDomain: "bd-betting-pro.firebaseapp.com",
-            databaseURL: "https://bd-betting-pro-default-rtdb.firebaseio.com",
-            projectId: "bd-betting-pro",
-            storageBucket: "bd-betting-pro.firebasestorage.app",
-            messagingSenderId: "75295050788",
-            appId: "1:75295050788:web:e2141156728f192bfbdcb1"
+    function openCoinAdjustModal(uid) {
+      const user = store.users.find((u) => u.id === uid);
+      if (!user) return;
+      showModal(`Adjust Coins: ${user.displayName}`, `
+        <form id="coin-adjust-form" class="stack-sm">
+          <p class="small muted">Current Balance: <strong>${user.coinBalance ?? 0} Coins</strong></p>
+          <label class="small">Delta (+ to credit, - to deduct)</label>
+          <input id="adj-amount" type="number" placeholder="e.g. 200 or -50" required />
+          <label class="small">Reason (logged in Coin History &amp; Admin Logs)</label>
+          <input id="adj-reason" type="text" placeholder="Promotional bonus / Refund" required />
+          <button type="submit" class="btn btn-primary">Apply Coin Adjustment</button>
+        </form>
+      `, () => {
+        $("coin-adjust-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const amount = parseInt($("adj-amount").value, 10);
+          const reason = $("adj-reason").value.trim();
+          if (!amount || !reason) return toast("Enter non-zero amount and reason.", true);
+          try {
+            await runTransaction(db, async (tx) => {
+              const ref = doc(db, "users", uid);
+              const snap = await tx.get(ref);
+              if (!snap.exists()) throw new Error("User not found");
+              const cur = Number(snap.data().coinBalance || 0);
+              const next = cur + amount;
+              if (next < 0) throw new Error("Cannot make balance negative.");
+              tx.update(ref, { coinBalance: next, updatedAt: serverTimestamp() });
+              const txId = `adm_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+              tx.set(doc(db, "coinTransactions", txId), {
+                userId: uid,
+                type: "admin_adjustment",
+                amount,
+                balanceAfter: next,
+                title: amount > 0 ? `Admin Credit (+${amount})` : `Admin Deduction (${amount})`,
+                description: reason.slice(0, 240),
+                referenceId: store.user.uid,
+                status: "completed",
+                adminEmail: store.user.email || "admin",
+                createdAt: serverTimestamp(),
+              });
+            });
+            await logAdminAction(store.user, "adjust_coins", "user", uid, `Amount ${amount}: ${reason}`);
+            closeModal();
+            toast("Coin balance updated.");
+          } catch (err) {
+            toast(err.message, true);
+          }
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        
-        const APP_VERSION = "1.2"; 
+      });
+    }
 
-        let user=null, bal=0, conf={}, activeIntervals=[], unlockIntervals=[];
-        let currentMatchData = null; 
-        let activeCategory = ''; 
-        let availableVipMatches = []; // Store real matches here
+    async function toggleUserStatus(uid) {
+      const user = store.users.find((u) => u.id === uid);
+      if (!user) return;
+      const nextStatus = user.accountStatus === "active" ? "banned" : "active";
+      try {
+        await updateDoc(doc(db, "users", uid), { accountStatus: nextStatus, updatedAt: serverTimestamp() });
+        await logAdminAction(store.user, "set_user_status", "user", uid, `Set accountStatus=${nextStatus}`);
+        toast(`User marked ${nextStatus}.`);
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
 
-        const fakeNames = ["Rahim", "Karim", "Suman", "Hasan", "Rakib", "Jahid", "Tanvir", "Milon", "Biplob", "Sagor", "Arif", "Nayon", "Riaz", "Shakil"];
+    function renderMatches(el) {
+      const sorted = [...store.matches].sort((a, b) => (b.kickoffMillis || 0) - (a.kickoffMillis || 0));
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Matches &amp; Tips (${sorted.length})</h3>
+            <button id="add-match-btn" class="btn btn-gold">+ Add Match</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Fixture</th><th>Category / Type</th><th>Odds &amp; Cost</th><th>Status</th><th>Published</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${sorted.map((m) => `
+                  <tr>
+                    <td><strong>${esc(m.homeTeam)} vs ${esc(m.awayTeam)}</strong><br><span class="small muted">${esc(m.league)} • ${esc(m.matchDate)} ${esc(m.matchTime)}</span></td>
+                    <td>${esc(m.categoryName)}<br><span class="pill ${m.isVip ? "pill-gold" : "pill-cyan"}">${m.isVip ? "VIP" : "FREE"}</span></td>
+                    <td>${esc(m.odds)} • <strong>${m.requiredCoins ?? 0}c</strong></td>
+                    <td>${esc(m.status)}${m.result ? `<br><span class="small muted">${esc(m.result)}</span>` : ""}</td>
+                    <td>${m.isPublished ? `<span class="pill pill-green">Yes</span>` : `<span class="pill pill-red">Draft</span>`}</td>
+                    <td class="actions-cell">
+                      <button class="btn btn-secondary btn-sm" data-edit-match="${esc(m.id)}">Edit</button>
+                      <button class="btn btn-danger btn-sm" data-del-match="${esc(m.id)}">Delete</button>
+                    </td>
+                  </tr>
+                `).join("") || `<tr><td colspan="6" class="muted">No matches added yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
 
-        window.onload = function() {
-            if(localStorage.getItem('uid')) {
-                user = {id:localStorage.getItem('uid'), name:localStorage.getItem('uname')};
-                startApp();
-            } else { showLog(); }
-            
-            checkUpdate();
-            loadRealVipData(); // Load real matches for notification
-            startFakeNotifs(); 
+      $("add-match-btn").onclick = () => openMatchModal(null);
+      el.querySelectorAll("[data-edit-match]").forEach((b) => {
+        b.onclick = () => openMatchModal(store.matches.find((m) => m.id === b.dataset.editMatch));
+      });
+      el.querySelectorAll("[data-del-match]").forEach((b) => {
+        b.onclick = async () => {
+          if (!confirm("Delete this match and its prediction secret?")) return;
+          try {
+            await deleteDoc(doc(db, "matches", b.dataset.delMatch, "secret", "prediction")).catch(() => {});
+            await deleteDoc(doc(db, "matches", b.dataset.delMatch));
+            await logAdminAction(store.user, "delete_match", "match", b.dataset.delMatch, "Deleted match");
+            toast("Match deleted.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        };
+      });
+    }
 
-            window.addEventListener('popstate', function(event) {
-                const overlay = document.getElementById('match-overlay');
-                if(overlay.style.display === 'block') { closeM(true); }
+    async function openMatchModal(existing) {
+      let secretTip = existing?.prediction || "";
+      if (existing) {
+        try {
+          const sSnap = await getDoc(doc(db, "matches", existing.id, "secret", "prediction"));
+          if (sSnap.exists()) secretTip = sSnap.data().prediction || secretTip;
+        } catch {}
+      }
+
+      const catOptions = store.categories.map((c) =>
+        `<option value="${esc(c.id)}" ${existing?.categoryId === c.id ? "selected" : ""}>${esc(c.name)} (${esc(c.section)})</option>`
+      ).join("");
+
+      showModal(existing ? "Edit Match" : "Create Match", `
+        <form id="match-form" class="stack-sm">
+          <div class="form-grid">
+            <div><label class="small">Category</label><select id="m-cat">${catOptions}</select></div>
+            <div><label class="small">League</label><input id="m-league" value="${esc(existing?.league || "")}" required /></div>
+            <div><label class="small">Home Team</label><input id="m-home" value="${esc(existing?.homeTeam || "")}" required /></div>
+            <div><label class="small">Away Team</label><input id="m-away" value="${esc(existing?.awayTeam || "")}" required /></div>
+            <div><label class="small">Date (YYYY-MM-DD)</label><input id="m-date" value="${esc(existing?.matchDate || new Date().toISOString().slice(0, 10))}" required /></div>
+            <div><label class="small">Time (HH:MM)</label><input id="m-time" value="${esc(existing?.matchTime || "20:00")}" required /></div>
+            <div><label class="small">Prediction Type</label><input id="m-ptype" value="${esc(existing?.predictionType || "1X2 / Goals")}" /></div>
+            <div><label class="small">Secret Prediction Tip</label><input id="m-tip" value="${esc(secretTip)}" required /></div>
+            <div><label class="small">Odds</label><input id="m-odds" value="${esc(existing?.odds || "1.85")}" required /></div>
+            <div><label class="small">Required Coins (0 if Free)</label><input id="m-coins" type="number" min="0" value="${existing?.requiredCoins ?? 0}" /></div>
+            <div><label class="small">Status</label>
+              <select id="m-status">
+                ${["UPCOMING", "LIVE", "FINISHED", "WON", "LOST", "CANCELLED", "POSTPONED"].map((s) =>
+                  `<option value="${s}" ${existing?.status === s ? "selected" : ""}>${s}</option>`
+                ).join("")}
+              </select>
+            </div>
+            <div><label class="small">Final Result</label><input id="m-result" value="${esc(existing?.result || "")}" placeholder="e.g. 2 - 1" /></div>
+          </div>
+          <label class="small">Analysis / Description</label>
+          <textarea id="m-desc">${esc(existing?.description || "")}</textarea>
+          <div class="form-grid">
+            <label class="checkbox-row"><input id="m-vip" type="checkbox" ${existing?.isVip ? "checked" : ""} /> VIP Locked Match</label>
+            <label class="checkbox-row"><input id="m-public" type="checkbox" ${existing?.isPublic ? "checked" : ""} /> Public Tip (Unlocked for all)</label>
+            <label class="checkbox-row"><input id="m-featured" type="checkbox" ${existing?.isFeatured ? "checked" : ""} /> Featured</label>
+            <label class="checkbox-row"><input id="m-published" type="checkbox" ${existing?.isPublished !== false ? "checked" : ""} /> Published in App</label>
+          </div>
+          <button type="submit" class="btn btn-primary">${existing ? "Save Changes" : "Publish Match"}</button>
+        </form>
+      `, () => {
+        $("match-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const catId = $("m-cat").value;
+          const catObj = store.categories.find((c) => c.id === catId);
+          const isVip = $("m-vip").checked;
+          const isPublic = $("m-public").checked;
+          const tipValue = $("m-tip").value.trim();
+          const dateStr = $("m-date").value.trim();
+          const timeStr = $("m-time").value.trim();
+          const parsedMillis = Date.parse(`${dateStr}T${timeStr}:00`) || Date.now();
+          const id = existing?.id || `match_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+
+          const payload = {
+            categoryId: catId,
+            categoryName: catObj?.name || catId,
+            league: $("m-league").value.trim(),
+            homeTeam: $("m-home").value.trim(),
+            awayTeam: $("m-away").value.trim(),
+            matchDate: dateStr,
+            matchTime: timeStr,
+            kickoffMillis: parsedMillis,
+            predictionType: $("m-ptype").value.trim(),
+            prediction: isVip && !isPublic ? "" : tipValue,
+            odds: $("m-odds").value.trim(),
+            requiredCoins: parseInt($("m-coins").value || "0", 10),
+            status: $("m-status").value,
+            result: $("m-result").value.trim(),
+            isVip,
+            isPublic,
+            isFeatured: $("m-featured").checked,
+            isPublished: $("m-published").checked,
+            description: $("m-desc").value.trim() || null,
+            unlockCount: existing?.unlockCount ?? 0,
+            createdAt: existing?.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+
+          try {
+            await setDoc(doc(db, "matches", id), payload, { merge: true });
+            await setDoc(doc(db, "matches", id, "secret", "prediction"), {
+              prediction: tipValue,
+              updatedAt: serverTimestamp(),
             });
-        }
+            await logAdminAction(store.user, existing ? "update_match" : "create_match", "match", id, `${payload.homeTeam} vs ${payload.awayTeam}`);
+            closeModal();
+            toast("Match saved.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        };
+      });
+    }
 
-        // --- NEW: FETCH REAL MATCH DATA FOR NOTIFICATIONS (WITH TIME CHECK) ---
-        function loadRealVipData() {
-            db.ref('matches').on('value', snap => {
-                availableVipMatches = []; // Clear old data
-                const data = snap.val();
-                const now = Date.now(); // Current timestamp
+    function renderCategories(el) {
+      const sorted = [...store.categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Categories (${sorted.length})</h3>
+            <button id="add-cat-btn" class="btn btn-gold">+ Add Category</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Section</th><th>Icon Key</th><th>Order</th><th>Active</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${sorted.map((c) => `
+                  <tr>
+                    <td><strong>${esc(c.name)}</strong><br><code class="small">${esc(c.slug)}</code></td>
+                    <td><span class="pill ${c.section === "vip" ? "pill-gold" : "pill-cyan"}">${esc(c.section.toUpperCase())}</span></td>
+                    <td>${esc(c.iconKey)}</td>
+                    <td>${c.sortOrder ?? 0}</td>
+                    <td>${c.isActive ? "Yes" : "No"}</td>
+                    <td class="actions-cell">
+                      <button class="btn btn-secondary btn-sm" data-edit-cat="${esc(c.id)}">Edit</button>
+                      <button class="btn btn-danger btn-sm" data-del-cat="${esc(c.id)}">Delete</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      $("add-cat-btn").onclick = () => openCategoryModal(null);
+      el.querySelectorAll("[data-edit-cat]").forEach((b) => {
+        b.onclick = () => openCategoryModal(store.categories.find((c) => c.id === b.dataset.editCat));
+      });
+      el.querySelectorAll("[data-del-cat]").forEach((b) => {
+        b.onclick = async () => {
+          if (!confirm("Delete this category?")) return;
+          await deleteDoc(doc(db, "categories", b.dataset.delCat));
+          toast("Category deleted.");
+        };
+      });
+    }
 
-                if(data) {
-                    Object.entries(data).forEach(([catKey, matches]) => {
-                        if(catKey !== 'daily_odds' && catKey !== 'unov_tips') {
-                            Object.values(matches).forEach(match => {
-                                if(match.price > 0 && match.status === 'PENDING') {
-                                    // --- TIME CHECK LOGIC ---
-                                    try {
-                                        const parts = match.date.split(/[-/]/); 
-                                        if(parts.length === 3) {
-                                            let y = parts[2];
-                                            if(y.length === 2) y = "20" + y;
-                                            
-                                            // Construct ISO format YYYY-MM-DDTHH:mm:00
-                                            const matchDateIso = `${y}-${parts[1]}-${parts[0]}T${match.time}:00`;
-                                            const matchTs = new Date(matchDateIso).getTime();
+    function openCategoryModal(existing) {
+      showModal(existing ? "Edit Category" : "New Category", `
+        <form id="cat-form" class="stack-sm">
+          <label class="small">Name</label><input id="c-name" value="${esc(existing?.name || "")}" required />
+          <label class="small">Slug ID</label><input id="c-slug" value="${esc(existing?.slug || "")}" ${existing ? "disabled" : ""} required />
+          <label class="small">Section</label>
+          <select id="c-sec"><option value="free" ${existing?.section === "free" ? "selected" : ""}>free</option><option value="vip" ${existing?.section === "vip" ? "selected" : ""}>vip</option></select>
+          <label class="small">Icon Key (futbol, shield, chart, lock, bullseye, clock, layers, trophy)</label>
+          <input id="c-icon" value="${esc(existing?.iconKey || "futbol")}" required />
+          <label class="small">Sort Order</label><input id="c-order" type="number" value="${existing?.sortOrder ?? 1}" />
+          <label class="checkbox-row"><input id="c-active" type="checkbox" ${existing?.isActive !== false ? "checked" : ""} /> Active</label>
+          <button type="submit" class="btn btn-primary">Save Category</button>
+        </form>
+      `, () => {
+        $("cat-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const slug = (existing?.id || $("c-slug").value.trim()).replace(/[^a-zA-Z0-9_-]/g, "_");
+          await setDoc(doc(db, "categories", slug), {
+            name: $("c-name").value.trim(),
+            slug,
+            section: $("c-sec").value,
+            iconKey: $("c-icon").value.trim(),
+            sortOrder: parseInt($("c-order").value || "0", 10),
+            isActive: $("c-active").checked,
+            createdAt: existing?.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+          closeModal();
+          toast("Category saved.");
+        };
+      });
+    }
 
-                                            // ONLY ADD IF MATCH IS IN FUTURE
-                                            if(matchTs > now) {
-                                                let displayCat = "Match";
-                                                if(catKey === 'fixed') displayCat = "Fixed Match";
-                                                else if(catKey === 'cs') displayCat = "Correct Score";
-                                                else if(catKey === 'htft') displayCat = "HT/FT VIP";
-                                                else if(catKey === 'combo') displayCat = "Mega Combo";
-                                                
-                                                availableVipMatches.push({
-                                                    cat: displayCat,
-                                                    price: match.price
-                                                });
-                                            }
-                                        }
-                                    } catch(e) {
-                                        console.log("Date parse error", e);
-                                    }
-                                    // --- END TIME CHECK ---
-                                }
-                            });
-                        }
-                    });
-                }
+    function renderPackages(el) {
+      const sorted = [...store.packages].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Google Play Coin Packages (${sorted.length})</h3>
+            <button id="add-pkg-btn" class="btn btn-gold">+ Add Package</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Title</th><th>Coins</th><th>Play Product SKU</th><th>Fallback Price</th><th>Visible</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${sorted.map((p) => `
+                  <tr>
+                    <td><strong>${esc(p.title)}</strong> ${p.badgeText ? `<span class="pill pill-gold">${esc(p.badgeText)}</span>` : ""}</td>
+                    <td>${p.coins}</td>
+                    <td><code>${esc(p.productId)}</code></td>
+                    <td>${esc(p.displayPrice)}</td>
+                    <td>${p.isVisible ? "Yes" : "Hidden"}</td>
+                    <td class="actions-cell">
+                      <button class="btn btn-secondary btn-sm" data-edit-pkg="${esc(p.id)}">Edit</button>
+                      <button class="btn btn-danger btn-sm" data-del-pkg="${esc(p.id)}">Delete</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      $("add-pkg-btn").onclick = () => openPackageModal(null);
+      el.querySelectorAll("[data-edit-pkg]").forEach((b) => {
+        b.onclick = () => openPackageModal(store.packages.find((p) => p.id === b.dataset.editPkg));
+      });
+      el.querySelectorAll("[data-del-pkg]").forEach((b) => {
+        b.onclick = async () => {
+          if (!confirm("Delete this coin package?")) return;
+          await deleteDoc(doc(db, "coinPackages", b.dataset.delPkg));
+          toast("Coin package deleted.");
+        };
+      });
+    }
+
+    function openPackageModal(existing) {
+      showModal(existing ? "Edit Coin Package" : "New Coin Package", `
+        <form id="pkg-form" class="stack-sm">
+          <label class="small">Title (e.g. 500 Coins)</label><input id="p-title" value="${esc(existing?.title || "")}" required />
+          <label class="small">Coins Amount</label><input id="p-coins" type="number" min="1" value="${existing?.coins ?? 500}" required />
+          <label class="small">Google Play In-App Product ID</label><input id="p-sku" value="${esc(existing?.productId || "YOUR_PLAY_PRODUCT_ID_500")}" required />
+          <label class="small">Fallback Display Price</label><input id="p-price" value="${esc(existing?.displayPrice || "$4.99")}" required />
+          <label class="small">Badge Text (optional)</label><input id="p-badge" value="${esc(existing?.badgeText || "")}" />
+          <label class="small">Sort Order</label><input id="p-order" type="number" value="${existing?.sortOrder ?? 1}" />
+          <label class="checkbox-row"><input id="p-vis" type="checkbox" ${existing?.isVisible !== false ? "checked" : ""} /> Visible in Coin Store</label>
+          <button type="submit" class="btn btn-primary">Save Coin Package</button>
+        </form>
+      `, () => {
+        $("pkg-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const id = existing?.id || `pkg_${$("p-coins").value}`;
+          await setDoc(doc(db, "coinPackages", id), {
+            title: $("p-title").value.trim(),
+            coins: parseInt($("p-coins").value, 10),
+            productId: $("p-sku").value.trim(),
+            displayPrice: $("p-price").value.trim(),
+            badgeText: $("p-badge").value.trim() || null,
+            sortOrder: parseInt($("p-order").value || "1", 10),
+            isVisible: $("p-vis").checked,
+            createdAt: existing?.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+          closeModal();
+          toast("Coin package saved.");
+        };
+      });
+    }
+
+    function renderTransactions(el) {
+      el.innerHTML = `
+        <div class="panel-card" style="margin-bottom:20px;">
+          <h3>Play Purchase Verifications (${store.verifications.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User ID</th><th>Product</th><th>Coins</th><th>Order ID</th><th>Status</th></tr></thead>
+              <tbody>
+                ${store.verifications.map((v) => `
+                  <tr>
+                    <td><code class="small">${esc(v.userId)}</code></td>
+                    <td>${esc(v.productId)}</td>
+                    <td>${v.coins}</td>
+                    <td>${esc(v.orderId || "-")}</td>
+                    <td><span class="pill ${v.status === "verified" ? "pill-green" : "pill-gold"}">${esc(v.status)}</span></td>
+                  </tr>
+                `).join("") || `<tr><td colspan="5" class="muted">No Play purchase verifications recorded yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>Coin Ledger (${store.transactions.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User ID</th><th>Type</th><th>Title &amp; Details</th><th>Amount</th><th>Balance After</th></tr></thead>
+              <tbody>
+                ${store.transactions.map((t) => `
+                  <tr>
+                    <td><code class="small">${esc(t.userId)}</code></td>
+                    <td>${esc(t.type)}</td>
+                    <td><strong>${esc(t.title)}</strong><br><span class="small muted">${esc(t.description)}</span></td>
+                    <td><span class="pill ${t.amount >= 0 ? "pill-green" : "pill-red"}">${t.amount >= 0 ? `+${t.amount}` : t.amount}</span></td>
+                    <td>${t.balanceAfter}</td>
+                  </tr>
+                `).join("") || `<tr><td colspan="5" class="muted">No transactions recorded yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderUnlocks(el) {
+      const unlocks = store.transactions.filter((t) => t.type === "match_unlock");
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>VIP Match Unlocks (${unlocks.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User ID</th><th>Match ID</th><th>Fixture</th><th>Coins Spent</th></tr></thead>
+              <tbody>
+                ${unlocks.map((u) => `
+                  <tr>
+                    <td><code class="small">${esc(u.userId)}</code></td>
+                    <td><code>${esc(u.referenceId)}</code></td>
+                    <td>${esc(u.description)}</td>
+                    <td>${Math.abs(u.amount)} Coins</td>
+                  </tr>
+                `).join("") || `<tr><td colspan="4" class="muted">No VIP unlocks yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNotifications(el) {
+      const userOpts = store.users.map((u) => `<option value="${esc(u.id)}">${esc(u.displayName)} (${esc(u.email)})</option>`).join("");
+      el.innerHTML = `
+        <div class="panel-card" style="margin-bottom:20px;">
+          <h3>Send Push &amp; In-App Notification</h3>
+          <form id="notif-form" class="stack-sm">
+            <div class="form-grid">
+              <div><label class="small">Title</label><input id="n-title" required /></div>
+              <div><label class="small">Audience</label>
+                <select id="n-target">
+                  <option value="ALL">All Users (Topic: all_users)</option>
+                  ${userOpts}
+                </select>
+              </div>
+            </div>
+            <label class="small">Message Body</label>
+            <textarea id="n-body" required></textarea>
+            <label class="small">Optional Image URL</label>
+            <input id="n-img" placeholder="https://..." />
+            <button type="submit" class="btn btn-primary">Send Notification</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h3>Sent Notifications (${store.notifications.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Title</th><th>Target</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                ${store.notifications.map((n) => `
+                  <tr>
+                    <td><strong>${esc(n.title)}</strong><br><span class="small muted">${esc(n.body)}</span></td>
+                    <td>${esc(n.targetUserId)}</td>
+                    <td><span class="pill pill-green">${esc(n.status)}</span></td>
+                    <td><button class="btn btn-danger btn-sm" data-del-notif="${esc(n.id)}">Delete</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      $("notif-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const target = $("n-target").value;
+        const id = `notif_${Date.now()}`;
+        await setDoc(doc(db, "notifications", id), {
+          title: $("n-title").value.trim(),
+          body: $("n-body").value.trim(),
+          imageUrl: $("n-img").value.trim() || null,
+          targetType: target === "ALL" ? "all" : "user",
+          targetTopic: target === "ALL" ? "all_users" : null,
+          targetUserId: target,
+          status: "sent",
+          sentByEmail: store.user.email || "admin",
+          createdAt: serverTimestamp(),
+        });
+        await logAdminAction(store.user, "send_notification", "notification", id, $("n-title").value.trim());
+        toast("Notification published & queued for FCM delivery.");
+      };
+      el.querySelectorAll("[data-del-notif]").forEach((b) => {
+        b.onclick = async () => {
+          await deleteDoc(doc(db, "notifications", b.dataset.delNotif));
+          toast("Notification deleted.");
+        };
+      });
+    }
+
+    function renderSliders(el) {
+      const sorted = [...store.sliders].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Home Slider Banners (${sorted.length})</h3>
+            <button id="add-slider-btn" class="btn btn-gold">+ Add Banner</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Title</th><th>Action</th><th>Order</th><th>Active</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${sorted.map((s) => `
+                  <tr>
+                    <td><strong>${esc(s.title)}</strong><br><span class="small muted">${esc(s.subtitle)}</span></td>
+                    <td>${esc(s.actionType)}: <code>${esc(s.actionTarget)}</code></td>
+                    <td>${s.sortOrder}</td>
+                    <td>${s.isActive ? "Yes" : "No"}</td>
+                    <td class="actions-cell">
+                      <button class="btn btn-secondary btn-sm" data-edit-sl="${esc(s.id)}">Edit</button>
+                      <button class="btn btn-danger btn-sm" data-del-sl="${esc(s.id)}">Delete</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      $("add-slider-btn").onclick = () => openSliderModal(null);
+      el.querySelectorAll("[data-edit-sl]").forEach((b) => {
+        b.onclick = () => openSliderModal(store.sliders.find((s) => s.id === b.dataset.editSl));
+      });
+      el.querySelectorAll("[data-del-sl]").forEach((b) => {
+        b.onclick = async () => {
+          await deleteDoc(doc(db, "sliders", b.dataset.delSl));
+          toast("Banner deleted.");
+        };
+      });
+    }
+
+    function openSliderModal(existing) {
+      showModal(existing ? "Edit Slider Banner" : "Add Slider Banner", `
+        <form id="slider-form" class="stack-sm">
+          <label class="small">Title</label><input id="s-title" value="${esc(existing?.title || "")}" />
+          <label class="small">Subtitle</label><input id="s-sub" value="${esc(existing?.subtitle || "")}" />
+          <label class="small">Banner Image URL (or upload below)</label><input id="s-img" value="${esc(existing?.imageUrl || "")}" />
+          <input id="s-file" type="file" accept="image/*" />
+          <label class="small">Button Text</label><input id="s-btn" value="${esc(existing?.buttonText || "View Now")}" />
+          <label class="small">Action Type</label>
+          <select id="s-type">
+            ${["none", "coin_store", "category", "url"].map((t) => `<option value="${t}" ${existing?.actionType === t ? "selected" : ""}>${t}</option>`).join("")}
+          </select>
+          <label class="small">Action Target (Category slug or URL)</label><input id="s-target" value="${esc(existing?.actionTarget || "")}" />
+          <label class="small">Sort Order</label><input id="s-order" type="number" value="${existing?.sortOrder ?? 1}" />
+          <label class="checkbox-row"><input id="s-active" type="checkbox" ${existing?.isActive !== false ? "checked" : ""} /> Active</label>
+          <button type="submit" class="btn btn-primary">Save Banner</button>
+        </form>
+      `, () => {
+        $("s-file").onchange = async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          try {
+            toast("Uploading banner image to Firebase Storage...");
+            const url = await uploadBannerImage("banners", file);
+            $("s-img").value = url;
+            toast("Image uploaded.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        };
+        $("slider-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const id = existing?.id || `slider_${Date.now()}`;
+          await setDoc(doc(db, "sliders", id), {
+            title: $("s-title").value.trim(),
+            subtitle: $("s-sub").value.trim(),
+            imageUrl: $("s-img").value.trim(),
+            buttonText: $("s-btn").value.trim(),
+            actionType: $("s-type").value,
+            actionTarget: $("s-target").value.trim(),
+            sortOrder: parseInt($("s-order").value || "1", 10),
+            isActive: $("s-active").checked,
+            createdAt: existing?.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+          closeModal();
+          toast("Banner saved.");
+        };
+      });
+    }
+
+    function renderPopupSettings(el) {
+      const p = store.settings.popup || {};
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>Popup Announcement Config</h3>
+          <form id="popup-form" class="stack-sm">
+            <label class="checkbox-row"><input id="pop-en" type="checkbox" ${p.isEnabled ? "checked" : ""} /> Enable Popup on App Launch</label>
+            <label class="small">Title</label><input id="pop-title" value="${esc(p.title || "")}" />
+            <label class="small">Description</label><textarea id="pop-desc">${esc(p.description || "")}</textarea>
+            <label class="small">Image URL</label><input id="pop-img" value="${esc(p.imageUrl || "")}" />
+            <div class="form-grid">
+              <div><label class="small">CTA Button Text</label><input id="pop-btn" value="${esc(p.buttonText || "")}" /></div>
+              <div><label class="small">CTA Action URL</label><input id="pop-url" value="${esc(p.buttonActionUrl || "")}" /></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Popup Config</button>
+          </form>
+        </div>
+      `;
+      $("popup-form").onsubmit = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(db, "settings", "popup"), {
+          isEnabled: $("pop-en").checked,
+          title: $("pop-title").value.trim(),
+          description: $("pop-desc").value.trim(),
+          imageUrl: $("pop-img").value.trim() || null,
+          buttonText: $("pop-btn").value.trim(),
+          buttonActionUrl: $("pop-url").value.trim(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        toast("Popup announcement updated.");
+      };
+    }
+
+    function renderAppSettings(el) {
+      const a = store.settings.app || {};
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>App Identity, Share Link, Version Gate &amp; Maintenance</h3>
+          <form id="app-cfg-form" class="stack-sm">
+            <div class="form-grid">
+              <div><label class="small">App Name</label><input id="a-name" value="${esc(a.appName || "Tips King")}" /></div>
+              <div><label class="small">Slider Interval (ms)</label><input id="a-s-int" type="number" value="${a.sliderIntervalMs ?? 4500}" /></div>
+              <div><label class="small">Latest Version Name</label><input id="a-vname" value="${esc(a.currentVersionName || "1.0")}" /></div>
+              <div><label class="small">Latest Version Code</label><input id="a-vcode" type="number" value="${a.currentVersionCode ?? 1}" /></div>
+              <div><label class="small">Minimum Supported Version Code</label><input id="a-min-code" type="number" value="${a.minSupportedVersionCode ?? 1}" /></div>
+              <div><label class="small">Minimum Supported Version Name</label><input id="a-min-name" value="${esc(a.minSupportedVersionName || "1.0")}" /></div>
+            </div>
+            <label class="small">Play Store / App Share URL</label><input id="a-url" value="${esc(a.updateUrl || "https://play.google.com/store/apps/details?id=com.aistudio.bdtipsking.kxmpzq")}" />
+            <label class="small">Share App Message</label><input id="a-share" value="${esc(a.shareMessage || "Check out Tips King for daily global football match insights & VIP tips!")}" />
+            <label class="small">Force Update Message</label><textarea id="a-umsg">${esc(a.updateMessage || "")}</textarea>
+            <label class="checkbox-row"><input id="a-slider-en" type="checkbox" ${a.sliderEnabled !== false ? "checked" : ""} /> Home Slider Enabled</label>
+            <label class="checkbox-row"><input id="a-maint" type="checkbox" ${a.maintenanceMode ? "checked" : ""} /> Maintenance Mode Enabled</label>
+            <label class="checkbox-row"><input id="a-bypass" type="checkbox" ${a.allowAdminBypass !== false ? "checked" : ""} /> Allow Admin Bypass During Maintenance</label>
+            <label class="small">Maintenance Message</label><textarea id="a-mmsg">${esc(a.maintenanceMessage || "")}</textarea>
+            <button type="submit" class="btn btn-primary">Save App Settings</button>
+          </form>
+        </div>
+      `;
+      $("app-cfg-form").onsubmit = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(db, "settings", "app"), {
+          appName: $("a-name").value.trim(),
+          sliderEnabled: $("a-slider-en").checked,
+          sliderIntervalMs: parseInt($("a-s-int").value || "4500", 10),
+          currentVersionName: $("a-vname").value.trim(),
+          currentVersionCode: parseInt($("a-vcode").value || "1", 10),
+          minSupportedVersionCode: parseInt($("a-min-code").value || "1", 10),
+          minSupportedVersionName: $("a-min-name").value.trim(),
+          updateUrl: $("a-url").value.trim(),
+          shareMessage: $("a-share").value.trim(),
+          updateMessage: $("a-umsg").value.trim(),
+          maintenanceMode: $("a-maint").checked,
+          allowAdminBypass: $("a-bypass").checked,
+          maintenanceMessage: $("a-mmsg").value.trim(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        await logAdminAction(store.user, "update_app_settings", "settings", "app", "Updated app, share & maintenance settings");
+        toast("App settings saved.");
+      };
+    }
+
+    function renderSupportSettings(el) {
+      const s = store.settings.support || {};
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>Support Contact Channels</h3>
+          <form id="sup-form" class="stack-sm">
+            <label class="small">Support Email</label><input id="sup-email" value="${esc(s.email || "")}" />
+            <label class="small">WhatsApp Link / Phone</label><input id="sup-wa" value="${esc(s.whatsapp || "")}" />
+            <label class="small">Telegram Link</label><input id="sup-tg" value="${esc(s.telegram || "")}" />
+            <label class="small">Website URL</label><input id="sup-web" value="${esc(s.website || "")}" />
+            <label class="small">Help Center / FAQ URL</label><input id="sup-help" value="${esc(s.helpCenterUrl || "")}" />
+            <button type="submit" class="btn btn-primary">Save Support Channels</button>
+          </form>
+        </div>
+      `;
+      $("sup-form").onsubmit = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(db, "settings", "support"), {
+          email: $("sup-email").value.trim(),
+          whatsapp: $("sup-wa").value.trim(),
+          telegram: $("sup-tg").value.trim(),
+          website: $("sup-web").value.trim(),
+          helpCenterUrl: $("sup-help").value.trim(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        toast("Support settings saved.");
+      };
+    }
+
+    function renderLegalSettings(el) {
+      const l = store.settings.legal || {};
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>Privacy Policy, Terms &amp; About</h3>
+          <form id="legal-form" class="stack-sm">
+            <label class="small">Privacy Policy</label><textarea id="leg-priv">${esc(l.privacyPolicy || "")}</textarea>
+            <label class="small">Terms &amp; Conditions</label><textarea id="leg-terms">${esc(l.termsAndConditions || "")}</textarea>
+            <label class="small">About App Text</label><textarea id="leg-about">${esc(l.aboutText || "")}</textarea>
+            <button type="submit" class="btn btn-primary">Save Legal Documents</button>
+          </form>
+        </div>
+      `;
+      $("legal-form").onsubmit = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(db, "settings", "legal"), {
+          privacyPolicy: $("leg-priv").value.trim(),
+          termsAndConditions: $("leg-terms").value.trim(),
+          aboutText: $("leg-about").value.trim(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        toast("Legal documents saved.");
+      };
+    }
+
+    function renderAnalytics(el) {
+      const won = store.matches.filter((m) => m.status === "WON").length;
+      const lost = store.matches.filter((m) => m.status === "LOST").length;
+      const totalWalletCoins = store.users.reduce((a, u) => a + Number(u.coinBalance || 0), 0);
+      const totalSpent = store.users.reduce((a, u) => a + Number(u.totalCoinsSpent || 0), 0);
+
+      el.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">Total Wallet Liability (Coins)</div><div class="stat-value">${totalWalletCoins}</div></div>
+          <div class="stat-card"><div class="stat-label">Total Coins Spent on VIP</div><div class="stat-value">${totalSpent}</div></div>
+          <div class="stat-card"><div class="stat-label">Matches Won</div><div class="stat-value">${won}</div></div>
+          <div class="stat-card"><div class="stat-label">Matches Lost</div><div class="stat-value">${lost}</div></div>
+        </div>
+      `;
+    }
+
+    function renderLogs(el) {
+      el.innerHTML = `
+        <div class="panel-card">
+          <h3>Admin Activity Audit Logs (${store.logs.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Admin</th><th>Action</th><th>Target</th><th>Details</th></tr></thead>
+              <tbody>
+                ${store.logs.map((l) => `
+                  <tr>
+                    <td>${esc(l.adminEmail)}</td>
+                    <td><code>${esc(l.action)}</code></td>
+                    <td>${esc(l.targetType)}/${esc(l.targetId)}</td>
+                    <td>${esc(l.details)}</td>
+                  </tr>
+                `).join("") || `<tr><td colspan="4" class="muted">No admin actions logged yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdmins(el) {
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 style="margin:0;">Authorized Admins (${store.admins.length})</h3>
+            <button id="add-admin-btn" class="btn btn-gold">+ Grant Admin Role</button>
+          </div>
+          <p class="small muted">Super-admin bootstrap email <code>mi6335705@gmail.com</code> (verified) also has full rule-level access. Add other Firebase UIDs below.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>UID</th><th>Name &amp; Email</th><th>Role</th><th>Action</th></tr></thead>
+              <tbody>
+                ${store.admins.map((a) => `
+                  <tr>
+                    <td><code>${esc(a.id)}</code></td>
+                    <td><strong>${esc(a.displayName)}</strong><br><span class="small muted">${esc(a.email)}</span></td>
+                    <td><span class="pill pill-gold">${esc(a.role)}</span></td>
+                    <td><button class="btn btn-danger btn-sm" data-del-admin="${esc(a.id)}">Revoke</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      $("add-admin-btn").onclick = () => {
+        showModal("Grant Admin Access", `
+          <form id="admin-add-form" class="stack-sm">
+            <label class="small">Firebase User UID</label><input id="adm-uid" required />
+            <label class="small">Email</label><input id="adm-email" type="email" required />
+            <label class="small">Display Name</label><input id="adm-name" required />
+            <label class="small">Role</label><select id="adm-role"><option value="super_admin">super_admin</option><option value="editor">editor</option></select>
+            <button type="submit" class="btn btn-primary">Save Admin</button>
+          </form>
+        `, () => {
+          $("admin-add-form").onsubmit = async (e) => {
+            e.preventDefault();
+            const uid = $("adm-uid").value.trim();
+            await setDoc(doc(db, "admins", uid), {
+              email: $("adm-email").value.trim(),
+              displayName: $("adm-name").value.trim(),
+              role: $("adm-role").value,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
             });
-        }
-
-        // --- UPDATED NOTIFICATION LOGIC ---
-        function showLiveNotif(name, cat, price) {
-            const el = document.getElementById('liveNotif');
-            document.getElementById('lnAvatar').innerText = name.charAt(0);
-            document.getElementById('lnUser').innerText = name;
-            document.getElementById('lnCat').innerText = cat;
-            document.getElementById('lnPrice').innerText = "৳"+price;
-            
-            el.classList.add('active');
-            setTimeout(() => { el.classList.remove('active'); }, 3000);
-        }
-
-        function startFakeNotifs() {
-            const randTime = Math.floor(Math.random() * (12000 - 5000 + 1) + 5000);
-            
-            setTimeout(() => {
-                if(availableVipMatches.length > 0) {
-                    const rName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
-                    const rData = availableVipMatches[Math.floor(Math.random() * availableVipMatches.length)];
-                    
-                    if(document.getElementById('main-app').style.display === 'block') {
-                        showLiveNotif(rName, rData.cat, rData.price);
-                    }
-                }
-                startFakeNotifs();
-            }, randTime);
-        }
-        
-        function checkUpdate() {
-            db.ref('config').on('value', s => {
-                const d = s.val();
-                if(d && d.latestVersion && d.latestVersion !== APP_VERSION) {
-                    const modal = document.getElementById('update-modal');
-                    const btn = document.getElementById('update-btn');
-                    modal.style.display = 'flex';
-                    btn.onclick = function() {
-                        if(d.updateUrl) window.open(d.updateUrl, '_system');
-                    }
-                }
-            });
-        }
-
-        function showLog(){ document.getElementById('login-view').style.display='flex'; document.getElementById('reg-view').style.display='none'; }
-        function showReg(){ document.getElementById('login-view').style.display='none'; document.getElementById('reg-view').style.display='flex'; }
-        
-        function reg() {
-            const n=document.getElementById('rn').value;
-            const e=document.getElementById('re').value;
-            const p=document.getElementById('rp').value;
-            if(!n || !e || !p) { showToast("⚠️ দয়া করে সব তথ্য পূরণ করুন!"); return; }
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(e)) { showToast("❌ দয়া করে একটি সঠিক ইমেইল দিন! (ex: user@gmail.com)"); return; }
-            const uid='u_'+Date.now();
-            db.ref('users/'+uid).set({name:n, email:e, password:p, balance:0, banned:false}).then(()=>{
-                localStorage.setItem('uid',uid); localStorage.setItem('uname',n);
-                user={id:uid, name:n}; startApp();
-            });
-        }
-        
-        function login() {
-            const e=document.getElementById('le').value, p=document.getElementById('lp').value;
-            if(!e || !p) return showToast("⚠️ ইমেইল ও পাসওয়ার্ড দিন!");
-            db.ref('users').orderByChild('email').equalTo(e).once('value', s=>{
-                if(s.exists()){
-                    let u=null; s.forEach(d=>{if(d.val().password==p) u={id:d.key, ...d.val()}});
-                    if(u){ localStorage.setItem('uid',u.id); localStorage.setItem('uname',u.name); user=u; startApp(); }
-                    else showToast("❌ ভুল পাসওয়ার্ড!");
-                } else showToast("❌ অ্যাকাউন্ট পাওয়া যায়নি!");
-            });
-        }
-        function logout(){ localStorage.clear(); location.reload(); }
-
-        function startApp() {
-            db.ref('users/'+user.id).on('value', s => {
-                const val = s.val();
-                if(val) {
-                    if(val.banned === true) { alert("❌ আপনার অ্যাকাউন্টটি ব্লক করা হয়েছে!"); logout(); return; }
-                    bal = val.balance||0; 
-                    document.getElementById('bal').innerText='৳ '+bal;
-                }
-            });
-
-            document.getElementById('login-view').style.display='none';
-            document.getElementById('reg-view').style.display='none';
-            document.getElementById('main-app').style.display='block';
-            document.getElementById('uName').innerText = user.name;
-            document.getElementById('uId').innerText = user.id.substr(0,6);
-
-            db.ref('config').on('value', s=>{ if(s.val()) conf=s.val(); });
-
-            db.ref('popup_config').on('value', s => {
-                const popup = s.val();
-                if(popup && popup.active) {
-                    document.getElementById('pop-title').innerText = popup.title;
-                    document.getElementById('pop-body').innerText = popup.text;
-                    document.getElementById('popup-modal').style.display = 'flex';
-                }
-            });
-            loadMyDeposits();
-        }
-
-        function closePopup() { document.getElementById('popup-modal').style.display = 'none'; }
-
-        function tab(id, el) {
-            document.querySelectorAll('.view-section').forEach(d=>d.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(d=>d.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function pay(m) {
-            const f=document.getElementById('pForm');
-            let c='', n='', d='';
-            if(m=='bkash'){ c='#e2136e'; n=conf.bkash; d='*247#'; }
-            else if(m=='nagad'){ c='#ec1c24'; n=conf.nagad; d='*167#'; }
-            else{ c='#8c3494'; n=conf.rocket; d='*322#'; }
-            document.getElementById('pHead').style.background=c; document.getElementById('pBtn').style.background=c;
-            document.getElementById('pNum').innerText=n; document.getElementById('pDial').innerText=d;
-            f.style.display='block';
-        }
-
-        function subDep() {
-            const sender = document.getElementById('pNumSender').value;
-            const amt = document.getElementById('pAmount').value;
-            const trx = document.getElementById('pTrx').value;
-            if(!sender || sender.length < 11) return showToast("❌ আপনার সঠিক মোবাইল নাম্বার দিন");
-            if(!amt || parseInt(amt) < 100) return showToast("❌ সর্বনিম্ন ১০০ টাকা ডিপোজিট করতে হবে");
-            if(!trx || trx.length < 4) return showToast("❌ সঠিক Transaction ID দিন");
-            db.ref('deposit_requests').push({
-                userId: user.id, userName: user.name, senderNum: sender,
-                amount: parseInt(amt), trxId: trx, status: 'PENDING', date: new Date().toLocaleDateString()
-            }).then(()=>{
-                showToast("✅ রিকোয়েস্ট পাঠানো হয়েছে!");
-                document.getElementById('pNumSender').value=""; document.getElementById('pAmount').value=""; 
-                document.getElementById('pTrx').value=""; document.getElementById('pForm').style.display='none';
-            });
-        }
-
-        function loadMyDeposits() {
-            db.ref('deposit_requests').orderByChild('userId').equalTo(user.id).on('value', snap => {
-                const list = document.getElementById('historyList'); list.innerHTML = "";
-                const data = snap.val(); if(!data) { list.innerHTML = "<p style='text-align:center; color:#666;'>No history found</p>"; return; }
-                Object.entries(data).reverse().forEach(([k,v]) => {
-                    let stClass = 'st-pending';
-                    if(v.status === 'APPROVED') stClass = 'st-approved';
-                    if(v.status === 'REJECTED') stClass = 'st-rejected';
-                    const div = document.createElement('div'); div.className = 'hist-card';
-                    div.innerHTML = `
-                        <div><div style="font-weight:bold; font-size:1.1rem; color:var(--text);">৳ ${v.amount}</div><div style="font-size:0.8rem; color:#aaa;">${v.date}</div><div style="font-size:0.8rem; color:#aaa; font-family:monospace;">${v.trxId}</div></div>
-                        <div class="hist-status ${stClass}">${v.status}</div>
-                    `;
-                    list.appendChild(div);
-                });
-            });
-        }
-
-        function openM(cat, t) {
-            window.history.pushState({view: 'match'}, '', '#match');
-            activeCategory = cat; 
-            document.getElementById('mTitle').innerText = t;
-            document.getElementById('match-overlay').style.display = 'block';
-
-            // Reset List to Loading
-            document.getElementById('mList').innerHTML = '<div style="text-align:center; color:#ccc; margin-top:50px;"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>';
-            currentMatchData = null; 
-
-            db.ref('matches/'+cat).on('value', s => { 
-                currentMatchData = s.val(); 
-                renderMatches(); 
-            });
-        }
-
-        function renderMatches() {
-            const list=document.getElementById('mList'); list.innerHTML="";
-            activeIntervals.forEach(clearInterval); activeIntervals=[];
-            unlockIntervals.forEach(clearInterval); unlockIntervals=[];
-
-            if(!currentMatchData){ list.innerHTML="<p style='text-align:center; color:#ccc'>No matches found</p>"; return;}
-
-            const matchesArray = Object.entries(currentMatchData).map(([key, val]) => ({key, ...val}));
-            const grouped = matchesArray.reduce((acc, curr) => {
-                const d = curr.date || 'Upcoming';
-                if(!acc[d]) acc[d] = [];
-                acc[d].push(curr);
-                return acc;
-            }, {});
-
-            const sortedDates = Object.keys(grouped).sort((a, b) => {
-                const partsA = a.split(/[-/]/);
-                const partsB = b.split(/[-/]/);
-                if(partsA.length < 3 || partsB.length < 3) return 0;
-                const dateA = new Date(partsA[2], partsA[1] - 1, partsA[0]).getTime();
-                const dateB = new Date(partsB[2], partsB[1] - 1, partsB[0]).getTime();
-                return dateB - dateA;
-            });
-
-            sortedDates.forEach(date => {
-                const groupMatches = grouped[date];
-                let totalOdds = 1.0;
-                let hasOdds = false;
-                
-                const dateContainer = document.createElement('div');
-                dateContainer.className = 'date-group-container';
-                dateContainer.innerHTML = `<div class="date-header">${date}</div>`;
-                
-                groupMatches.forEach(v => {
-                    const k = v.key;
-                    const isFree = v.price == 0;
-                    const isPaid = localStorage.getItem(k); 
-                    const isPublic = v.public === true;
-                    const show = isFree || isPaid || isPublic;
-
-                    if(v.odds && !isNaN(parseFloat(v.odds))) {
-                        totalOdds *= parseFloat(v.odds);
-                        hasOdds = true;
-                    }
-
-                    const cardDiv = document.createElement('div');
-                    let statusHtml = '';
-                    let borderClass = '';
-                    
-                    if(v.status === 'WON') {
-                        statusHtml = '<span class="status-badge st-won">WON <i class="fas fa-check-circle"></i></span>';
-                    } else if(v.status === 'LOST') {
-                        borderClass = 'lost';
-                        statusHtml = '<span class="status-badge st-lost">LOST <i class="fas fa-times-circle"></i></span>';
-                    } else {
-                        statusHtml = '<span class="status-badge st-pending">PENDING <i class="far fa-clock"></i></span>';
-                    }
-
-                    const contentHtml = `
-                        <div class="match-content">
-                            <div style="margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
-                                <div class="slip-league">${v.league || 'League'}</div>
-                                <div style="font-size:0.8rem; color:#ccc;"><i class="far fa-clock"></i> ${v.time}</div>
-                            </div>
-                            <div class="slip-teams">
-                                ${v.team1} <span class="vs-text">vs</span> ${v.team2}
-                            </div>
-                            <div class="info-box">
-                                <div style="color:white;">
-                                    <span style="color:#fbbf24; font-weight:bold;">Tips:</span> ${v.tip}
-                                </div>
-                                <div style="color:white;">
-                                    <span style="color:#22d3ee; font-weight:bold;">Odds:</span> ${v.odds}
-                                </div>
-                            </div>
-                            <div id="timer-content-${k}" style="font-size:0.8rem; color:#cbd5e1; margin-top:5px; text-align:center;"></div>
-                            ${statusHtml ? `<div style="text-align:right; margin-top:5px;">${statusHtml}</div>` : ''}
-                        </div>
-                    `;
-
-                    if(!show) {
-                        const storageKey = `fake_data_${k}`;
-                        const now = Date.now();
-                        let savedData = JSON.parse(localStorage.getItem(storageKey));
-
-                        if (!savedData || savedData.count < v.fakeUnlock) {
-                            savedData = {
-                                count: v.fakeUnlock,
-                                nextUpdate: now + (Math.random() * 300000) + 300000 
-                            };
-                            localStorage.setItem(storageKey, JSON.stringify(savedData));
-                        }
-
-                        if (now > savedData.nextUpdate) {
-                            savedData.count += 1;
-                            savedData.nextUpdate = now + (Math.random() * 300000) + 300000;
-                            localStorage.setItem(storageKey, JSON.stringify(savedData));
-                        }
-                        
-                        let displayCount = savedData.count;
-
-                        cardDiv.className = 'slip-card locked-state';
-                        cardDiv.innerHTML = `
-                            ${contentHtml}
-                            <div class="lock-overlay">
-                                <button class="unlock-btn" onclick="ul('${k}',${v.price})">
-                                    <i class="fas fa-lock"></i> Unlock ৳${v.price}
-                                </button>
-                                <div id="timer-locked-${k}" class="countdown-timer" style="color:#fbbf24; font-family:monospace; margin-top:5px; text-shadow:1px 1px 2px black;"></div>
-                                <div class="fake-unlock-text" style="color:#fbbf24; font-size:0.8rem; margin-top:5px; text-shadow:1px 1px 2px black;">
-                                    <i class="fas fa-unlock-alt"></i> গত ৩০ মিনিটে <span id="fake-cnt-${k}">${displayCount}</span> আনলক করেছে
-                                </div>
-                            </div>
-                        `;
-                        startTimer(v.date, v.time, `timer-locked-${k}`);
-
-                        const timeToNext = savedData.nextUpdate - now;
-                        if(timeToNext > 0) {
-                           const tmOut = setTimeout(() => {
-                               renderMatches();
-                           }, timeToNext + 1000);
-                           unlockIntervals.push(tmOut); 
-                        }
-
-                    } else {
-                        cardDiv.className = `slip-card ${borderClass}`;
-                        cardDiv.innerHTML = contentHtml;
-                        startTimer(v.date, v.time, `timer-content-${k}`);
-                    }
-                    dateContainer.appendChild(cardDiv);
-                });
-
-                if(hasOdds) {
-                    const footer = document.createElement('div');
-                    footer.className = 'total-odds-footer';
-                    footer.innerHTML = `Total Odds: ${totalOdds.toFixed(2)}`;
-                    dateContainer.appendChild(footer);
-                }
-
-                list.appendChild(dateContainer);
-            });
-        }
-
-        function closeM(fromHistory = false) {
-            document.getElementById('match-overlay').style.display='none';
-            db.ref('matches').off(); 
-            currentMatchData = null; 
-            activeIntervals.forEach(clearInterval); 
-            unlockIntervals.forEach(id => { clearTimeout(id); clearInterval(id); });
-            activeIntervals=[];
-            unlockIntervals=[];
-            if(!fromHistory) { window.history.back(); }
-        }
-
-        function startTimer(dateStr, timeStr, elemId) {
-            if(!dateStr || !timeStr) return;
-            const parts = dateStr.split(/[-/]/); if(parts.length < 3) return;
-            let year = parts[2]; if(year.length === 2) year = "20" + year; 
-            const isoDate = `${year}-${parts[1]}-${parts[0]}T${timeStr}:00`;
-            const target = new Date(isoDate).getTime();
-            if(isNaN(target)) return;
-            const interval = setInterval(() => {
-                const now = new Date().getTime(); const dist = target - now;
-                const el = document.getElementById(elemId);
-                if(!el) { clearInterval(interval); return; } 
-                if (dist < 0) { el.innerHTML = ""; clearInterval(interval); return; }
-                const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((dist % (1000 * 60)) / 1000);
-                el.innerHTML = `<i class="fas fa-clock"></i> Starts in: ${h}h ${m}m ${s}s`;
-            }, 1000);
-            activeIntervals.push(interval);
-        }
-
-        function ul(k, p) {
-            if(bal >= p) {
-                if(confirm("Unlock for ৳"+p+"?")) {
-                    db.ref('users/'+user.id).update({balance: bal-p}).then(()=>{
-                        localStorage.setItem(k, 'true');
-                        if(activeCategory && k) { db.ref('matches/' + activeCategory + '/' + k + '/unlockCount').transaction(count => { return (count || 0) + 1; }); }
-                        showToast("✅ আনলক সফল হয়েছে!"); 
-                        
-                        // REAL LIVE NOTIFICATION TRIGGER
-                        showLiveNotif("You", "Match", p);
-                        
-                        renderMatches(); 
-                    });
-                }
-            } else showToast("❌ পর্যাপ্ত ব্যালেন্স নেই!");
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.classList.add('show');
-            setTimeout(()=>t.classList.remove('show'), 3000);
-        }
-    </script>
+            await logAdminAction(store.user, "grant_admin", "admin", uid, $("adm-email").value.trim());
+            closeModal();
+            toast("Admin added.");
+          };
+        });
+      };
+      el.querySelectorAll("[data-del-admin]").forEach((b) => {
+        b.onclick = async () => {
+          await deleteDoc(doc(db, "admins", b.dataset.delAdmin));
+          toast("Admin revoked.");
+        };
+      });
+    }
+  </script>
 </body>
 </html>
