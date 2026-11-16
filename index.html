@@ -1,0 +1,749 @@
+<!-- START OF FILE user.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BD BETTING TIPS PRO</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        :root { --bg:#050910; --card:#152036; --text:#fff; --gold:#ffd700; --nav:#0f172a; --auth-btn:#ea580c; --bkash:#e2136e; --nagad:#ec1c24; --green:#22c55e; --red:#ef4444; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background:var(--bg); color:var(--text); height:100vh; overflow-x:hidden; padding-bottom:80px; }
+        
+        /* AUTH & BASIC UI */
+        .auth-container { padding:30px; height:100vh; display:none; flex-direction:column; justify-content:center; }
+        .auth-input { width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:15px; border-radius:10px; margin-bottom:15px; outline:none; }
+        .auth-btn { width:100%; padding:15px; background:var(--auth-btn); color:white; border:none; border-radius:30px; font-weight:bold; cursor:pointer; }
+        .fancy-title { font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 30px; background: linear-gradient(to right, #ffd700, #ea580c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 0px 20px rgba(234, 88, 12, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* NEW LOGIN STYLES */
+        .top-brand-text {
+            background: linear-gradient(to right, #facc15, #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        .create-acc-btn {
+            color: #22d3ee;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            border-bottom: 1px dashed #22d3ee;
+            padding-bottom: 2px;
+            transition: 0.3s;
+        }
+        .create-acc-btn:hover { color:white; border-color:white; }
+
+        /* MAIN APP */
+        #main-app { display:none; }
+        header { background:rgba(5,9,16,0.95); padding:15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; border-bottom:1px solid #333; }
+        .balance-box { background:linear-gradient(45deg, #1e3a8a, #2563eb); padding:5px 15px; border-radius:20px; font-weight:bold; }
+        
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:20px; }
+        .card { background:var(--card); padding:20px 15px; border-radius:15px; border:1px solid #333; position:relative; min-height:120px; }
+        .badge { position:absolute; top:10px; right:10px; background:var(--gold); color:black; padding:2px 8px; border-radius:5px; font-size:0.7rem; font-weight:bold; }
+        .card-icon { font-size:2rem; color:var(--gold); margin-bottom:10px; }
+        
+        /* PAYMENT */
+        .method-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:20px; }
+        .pay-method { background:white; padding:10px; border-radius:10px; text-align:center; color:black; font-weight:bold; cursor:pointer; }
+        .payment-form { display:none; background:white; color:black; margin:20px; border-radius:15px; overflow:hidden; }
+        .pay-head { background:var(--bkash); color:white; padding:15px; text-align:center; font-weight:bold; }
+        .pay-body { padding:20px; }
+        .inp-grp { margin-bottom:15px; }
+        .inp-grp label { display:block; font-size:0.9rem; margin-bottom:5px; font-weight:600; }
+        .inp-grp input { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
+        
+        /* HISTORY LIST */
+        .history-section { padding: 0 20px 20px; }
+        .hist-card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .hist-status { padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .st-pending { background: #facc15; color: black; }
+        .st-approved { background: var(--green); color: white; }
+        .st-rejected { background: var(--red); color: white; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position:fixed; bottom:0; width:100%; background:var(--nav); border-top:1px solid #333; display:flex; justify-content:space-around; padding:10px 0; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; color:#64748b; font-size:0.8rem; }
+        .nav-item.active { color:var(--gold); }
+        .view-section { display:none; } .view-section.active { display:block; }
+
+        /* MATCH OVERLAY & CARDS */
+        #match-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#3b0764; z-index:1000; overflow-y:auto; padding:20px; }
+        
+        .date-group-container { background: #5b21b6; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .date-header { text-align: center; font-size: 1.2rem; color: white; font-weight: 500; margin-bottom: 10px; }
+
+        .slip-card { background: linear-gradient(135deg, #4c1d95, #6d28d9); border: 2px solid #22c55e; border-radius: 12px; padding: 10px; margin-bottom: 8px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; }
+        .slip-card.lost { border-color: #ef4444; }
+        .match-content { transition: 0.3s; }
+
+        .slip-card.locked-state { border-color: #fb923c !important; }
+        .slip-card.locked-state .match-content { filter: blur(5px); opacity: 0.6; pointer-events: none; user-select: none; }
+
+        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.1); }
+
+        .slip-league { color: #facc15; font-size: 0.75rem; font-weight: bold; }
+        .slip-teams { color: white; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+        .vs-text { color: #9ca3af; font-size: 0.8em; margin: 0 5px; font-weight: 400; }
+        
+        .status-badge { font-weight: 800; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.3); display: inline-block; }
+        .st-won { color: #22c55e; } .st-lost { color: #ef4444; } .st-pending { color: #facc15; }
+
+        .info-box { background: rgba(0,0,0,0.25); padding: 5px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .info-box div { font-size: 0.85rem !important; }
+        .total-odds-footer { background: #2e1065; color: white; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; margin-top: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+
+        .unlock-btn { background: linear-gradient(90deg, #fbbf24, #ea580c); color: #000; font-weight: 800; font-size: 0.9rem; border: none; padding: 8px 20px; border-radius: 25px; cursor: pointer; width: 80%; margin: 5px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        /* POPUP MODAL & UPDATE MODAL */
+        #popup-modal, #update-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(5px); animation: popIn 0.3s ease-out; }
+        /* UPDATE MODAL SPECIFIC: HIGH Z-INDEX & SOLID BG */
+        #update-modal { background: #000; z-index: 9999; }
+        
+        @keyframes popIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+        .popup-content { background: linear-gradient(135deg, #1e293b, #0f172a); width: 85%; max-width: 400px; padding: 30px 20px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; position: relative; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); }
+        .popup-close { position: absolute; top: -15px; right: -15px; background: #ef4444; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid white; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .popup-title { color: var(--gold); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .popup-body { color: #e2e8f0; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
+        .toast { position:fixed; bottom:50px; left:50%; transform:translateX(-50%); background:#e11d48; color:#fff; padding:12px 25px; border-radius:30px; opacity:0; pointer-events:none; transition:0.3s; z-index:3000; width:max-content; font-weight:600; }
+        .toast.show { opacity:1; bottom:100px; }
+
+        /* LIVE NOTIFICATION STYLES */
+        .live-notify {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            color: white; padding: 8px 18px; border-radius: 30px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            border: 1px solid var(--gold);
+            z-index: 9999;
+            opacity: 0; pointer-events: none; transition: 0.5s;
+            width: max-content; max-width: 90%;
+            font-size: 0.8rem;
+        }
+        .live-notify.active { opacity: 1; top: 75px; } /* Shows below header */
+        .live-notify i { color: var(--green); }
+        .live-avatar { width: 25px; height: 25px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #aaa; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Views -->
+    <div id="login-view" class="auth-container">
+        <h2 class="top-brand-text">100% Fixed Football Match</h2>
+        <h2 style="text-align:center; margin-bottom:20px; color:white;">USER LOGIN</h2>
+        <input type="email" class="auth-input" id="le" placeholder="Email">
+        <input type="password" class="auth-input" id="lp" placeholder="Password">
+        <button class="auth-btn" onclick="login()">LOGIN</button>
+        <p style="text-align:center; margin-top:25px; color:#aaa;">
+            Don't have an account? <br>
+            <span class="create-acc-btn" onclick="showReg()">Create Account</span>
+        </p>
+    </div>
+
+    <div id="reg-view" class="auth-container">
+        <h1 class="fancy-title">Create<br>Account</h1>
+        <input type="text" class="auth-input" id="rn" placeholder="Full Name">
+        <input type="email" class="auth-input" id="re" placeholder="Email (ex: name@gmail.com)">
+        <input type="password" class="auth-input" id="rp" placeholder="Password">
+        <button class="auth-btn" onclick="reg()">REGISTER</button>
+        <p style="text-align:center; margin-top:20px; color:#aaa;" onclick="showLog()">Back to Login</p>
+    </div>
+
+    <div id="popup-modal">
+        <div class="popup-content">
+            <div class="popup-close" onclick="closePopup()"><i class="fas fa-times"></i></div>
+            <div id="pop-title" class="popup-title">NOTICE</div>
+            <div id="pop-body" class="popup-body">Welcome to BD Betting Tips Pro!</div>
+        </div>
+    </div>
+    
+    <div id="update-modal">
+        <div class="popup-content" style="border-color: #ef4444;">
+            <div style="font-size: 3rem; color: #ef4444; margin-bottom: 10px;"><i class="fas fa-cloud-download-alt"></i></div>
+            <div class="popup-title" style="color: #ef4444;">UPDATE REQUIRED</div>
+            <div class="popup-body" style="margin-bottom: 20px;">
+                A new version of this app is available.<br>Please update to continue using.
+            </div>
+            <button class="auth-btn" id="update-btn" style="background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);">UPDATE NOW</button>
+        </div>
+    </div>
+
+    <!-- LIVE NOTIFICATION POPUP -->
+    <div id="liveNotif" class="live-notify">
+        <div class="live-avatar" id="lnAvatar">A</div>
+        <div style="line-height: 1.2;">
+            <div style="font-weight: bold; color: var(--gold);" id="lnUser">User</div>
+            <div style="color: #ccc; font-size: 0.75rem;">Unlocked <span id="lnCat" style="color:white;">Match</span> for <span id="lnPrice" style="color:#22d3ee;">৳500</span> <i class="fas fa-check-circle"></i></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app">
+        <header>
+            <div style="font-weight:bold; font-size:1.2rem;">BD BETTING <span style="color:var(--gold);">KING</span></div>
+            <div class="balance-box"><i class="fas fa-wallet"></i> <span id="bal">৳ 0</span></div>
+        </header>
+
+        <!-- Home -->
+        <div id="home-view" class="view-section active">
+            <h4 style="padding:15px 20px 0; color:#888;">FREE TIPS</h4>
+            <div class="grid-2">
+                <div class="card" onclick="openM('daily_odds', 'Daily Odds')"><span class="badge" style="background:#555; color:white;">FREE</span><i class="far fa-futbol card-icon"></i><br>2+ Daily Odds</div>
+                <div class="card" onclick="openM('unov_tips', 'UN/OV Tips')"><span class="badge" style="background:#555; color:white;">FREE</span><i class="fas fa-chart-line card-icon"></i><br>Over/Under</div>
+            </div>
+            <h4 style="padding:0 20px; color:var(--gold);">VIP PREMIUM</h4>
+            <div class="grid-2">
+                <div class="card" onclick="openM('fixed', 'Fixed Match')"><span class="badge">VIP</span><i class="fas fa-lock card-icon"></i><br>100% Fixed</div>
+                <div class="card" onclick="openM('cs', 'Correct Score')"><span class="badge">VIP</span><i class="fas fa-bullseye card-icon"></i><br>Correct Score</div>
+                <div class="card" onclick="openM('htft', 'HT/FT')"><span class="badge">VIP</span><i class="fas fa-clock card-icon"></i><br>HT/FT VIP</div>
+                <div class="card" onclick="openM('combo', 'Mega Combo')"><span class="badge">VIP</span><i class="fas fa-layer-group card-icon"></i><br>Mega Combo</div>
+            </div>
+        </div>
+
+        <!-- Add Money -->
+        <div id="money-view" class="view-section">
+            <h2 style="text-align:center; margin-top:20px;">Payment Method</h2>
+            <div class="method-grid">
+                <div class="pay-method" onclick="pay('bkash')" style="color:#e2136e;">bKash</div>
+                <div class="pay-method" onclick="pay('nagad')" style="color:#ec1c24;">Nagad</div>
+                <div class="pay-method" onclick="pay('rocket')" style="color:#8c3494;">Rocket</div>
+            </div>
+            
+            <div id="pForm" class="payment-form">
+                <div class="pay-head" id="pHead">Transaction Details</div>
+                <div class="pay-body">
+                    <p style="background:#eee; padding:10px; border-radius:5px; font-size:0.9rem; margin-bottom:15px;">
+                        • Send Money to: <b id="pNum">...</b><br>
+                        • Dial <b id="pDial">*247#</b>
+                    </p>
+                    <div class="inp-grp">
+                        <label>Payment Number (যে নাম্বার থেকে পাঠিয়েছেন)</label>
+                        <input type="number" id="pNumSender" placeholder="017xxxxxxxx">
+                    </div>
+                    <div class="inp-grp">
+                        <label>Amount (Min: 100)</label>
+                        <input type="number" id="pAmount" placeholder="Ex: 500">
+                    </div>
+                    <div class="inp-grp">
+                        <label>Transaction ID</label>
+                        <input type="text" id="pTrx" placeholder="Ex: 8XF20...">
+                    </div>
+                    <button class="auth-btn" id="pBtn" style="border-radius:10px;" onclick="subDep()">VERIFY PAYMENT</button>
+                </div>
+            </div>
+
+            <!-- Deposit History Section -->
+            <div style="margin-top: 30px; padding: 0 20px;">
+                <h3 style="margin-bottom: 15px; border-left: 4px solid var(--gold); padding-left: 10px;">Deposit History</h3>
+            </div>
+            <div id="historyList" class="history-section">
+                <p style="text-align:center; color:#666;">No history found</p>
+            </div>
+        </div>
+
+        <!-- Profile -->
+        <div id="me-view" class="view-section" style="padding:20px;">
+            <div style="text-align:center; margin-bottom:30px;">
+                <div style="width:80px; height:80px; background:#333; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:2rem;"><i class="fas fa-user"></i></div>
+                <h3 id="uName">User</h3>
+                <p style="color:#888;">ID: <span id="uId">...</span></p>
+            </div>
+            <div style="background:#1e293b; border-radius:15px;">
+                <div style="padding:15px; border-bottom:1px solid #333;" onclick="window.open(conf.contact)">Admin Contact <i class="fas fa-chevron-right" style="float:right;"></i></div>
+                <div style="padding:15px; border-bottom:1px solid #333;" onclick="window.open(conf.telegram)">Telegram Channel <i class="fas fa-chevron-right" style="float:right;"></i></div>
+                <div style="padding:15px;" onclick="logout()">Logout <i class="fas fa-sign-out-alt" style="float:right;"></i></div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="tab('home-view', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" onclick="tab('money-view', this)"><i class="fas fa-wallet"></i>Add Money</div>
+            <div class="nav-item" onclick="tab('me-view', this)"><i class="fas fa-user"></i>Me</div>
+        </nav>
+    </div>
+
+    <!-- Matches Overlay -->
+    <div id="match-overlay">
+        <div style="display:flex; justify-content:space-between; color:white; margin-bottom:20px; align-items:center;">
+            <button onclick="closeM()" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:5px;"><i class="fas fa-arrow-left"></i> Back</button>
+            <h3 id="mTitle">Tips</h3>
+            <div style="width:30px"></div>
+        </div>
+        <div id="mList"></div>
+    </div>
+
+    <div id="toast" class="toast">Message</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHo2cOc22YdYamkCKM7puFDS2MhEyMwms",
+            authDomain: "bd-betting-pro.firebaseapp.com",
+            databaseURL: "https://bd-betting-pro-default-rtdb.firebaseio.com",
+            projectId: "bd-betting-pro",
+            storageBucket: "bd-betting-pro.firebasestorage.app",
+            messagingSenderId: "75295050788",
+            appId: "1:75295050788:web:e2141156728f192bfbdcb1"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        const APP_VERSION = "1.2"; 
+
+        let user=null, bal=0, conf={}, activeIntervals=[], unlockIntervals=[];
+        let currentMatchData = null; 
+        let activeCategory = ''; 
+        let availableVipMatches = []; // Store real matches here
+
+        const fakeNames = ["Rahim", "Karim", "Suman", "Hasan", "Rakib", "Jahid", "Tanvir", "Milon", "Biplob", "Sagor", "Arif", "Nayon", "Riaz", "Shakil"];
+
+        window.onload = function() {
+            if(localStorage.getItem('uid')) {
+                user = {id:localStorage.getItem('uid'), name:localStorage.getItem('uname')};
+                startApp();
+            } else { showLog(); }
+            
+            checkUpdate();
+            loadRealVipData(); // Load real matches for notification
+            startFakeNotifs(); 
+
+            window.addEventListener('popstate', function(event) {
+                const overlay = document.getElementById('match-overlay');
+                if(overlay.style.display === 'block') { closeM(true); }
+            });
+        }
+
+        // --- NEW: FETCH REAL MATCH DATA FOR NOTIFICATIONS (WITH TIME CHECK) ---
+        function loadRealVipData() {
+            db.ref('matches').on('value', snap => {
+                availableVipMatches = []; // Clear old data
+                const data = snap.val();
+                const now = Date.now(); // Current timestamp
+
+                if(data) {
+                    Object.entries(data).forEach(([catKey, matches]) => {
+                        if(catKey !== 'daily_odds' && catKey !== 'unov_tips') {
+                            Object.values(matches).forEach(match => {
+                                if(match.price > 0 && match.status === 'PENDING') {
+                                    // --- TIME CHECK LOGIC ---
+                                    try {
+                                        const parts = match.date.split(/[-/]/); 
+                                        if(parts.length === 3) {
+                                            let y = parts[2];
+                                            if(y.length === 2) y = "20" + y;
+                                            
+                                            // Construct ISO format YYYY-MM-DDTHH:mm:00
+                                            const matchDateIso = `${y}-${parts[1]}-${parts[0]}T${match.time}:00`;
+                                            const matchTs = new Date(matchDateIso).getTime();
+
+                                            // ONLY ADD IF MATCH IS IN FUTURE
+                                            if(matchTs > now) {
+                                                let displayCat = "Match";
+                                                if(catKey === 'fixed') displayCat = "Fixed Match";
+                                                else if(catKey === 'cs') displayCat = "Correct Score";
+                                                else if(catKey === 'htft') displayCat = "HT/FT VIP";
+                                                else if(catKey === 'combo') displayCat = "Mega Combo";
+                                                
+                                                availableVipMatches.push({
+                                                    cat: displayCat,
+                                                    price: match.price
+                                                });
+                                            }
+                                        }
+                                    } catch(e) {
+                                        console.log("Date parse error", e);
+                                    }
+                                    // --- END TIME CHECK ---
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // --- UPDATED NOTIFICATION LOGIC ---
+        function showLiveNotif(name, cat, price) {
+            const el = document.getElementById('liveNotif');
+            document.getElementById('lnAvatar').innerText = name.charAt(0);
+            document.getElementById('lnUser').innerText = name;
+            document.getElementById('lnCat').innerText = cat;
+            document.getElementById('lnPrice').innerText = "৳"+price;
+            
+            el.classList.add('active');
+            setTimeout(() => { el.classList.remove('active'); }, 3000);
+        }
+
+        function startFakeNotifs() {
+            const randTime = Math.floor(Math.random() * (12000 - 5000 + 1) + 5000);
+            
+            setTimeout(() => {
+                if(availableVipMatches.length > 0) {
+                    const rName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+                    const rData = availableVipMatches[Math.floor(Math.random() * availableVipMatches.length)];
+                    
+                    if(document.getElementById('main-app').style.display === 'block') {
+                        showLiveNotif(rName, rData.cat, rData.price);
+                    }
+                }
+                startFakeNotifs();
+            }, randTime);
+        }
+        
+        function checkUpdate() {
+            db.ref('config').on('value', s => {
+                const d = s.val();
+                if(d && d.latestVersion && d.latestVersion !== APP_VERSION) {
+                    const modal = document.getElementById('update-modal');
+                    const btn = document.getElementById('update-btn');
+                    modal.style.display = 'flex';
+                    btn.onclick = function() {
+                        if(d.updateUrl) window.open(d.updateUrl, '_system');
+                    }
+                }
+            });
+        }
+
+        function showLog(){ document.getElementById('login-view').style.display='flex'; document.getElementById('reg-view').style.display='none'; }
+        function showReg(){ document.getElementById('login-view').style.display='none'; document.getElementById('reg-view').style.display='flex'; }
+        
+        function reg() {
+            const n=document.getElementById('rn').value;
+            const e=document.getElementById('re').value;
+            const p=document.getElementById('rp').value;
+            if(!n || !e || !p) { showToast("⚠️ দয়া করে সব তথ্য পূরণ করুন!"); return; }
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(e)) { showToast("❌ দয়া করে একটি সঠিক ইমেইল দিন! (ex: user@gmail.com)"); return; }
+            const uid='u_'+Date.now();
+            db.ref('users/'+uid).set({name:n, email:e, password:p, balance:0, banned:false}).then(()=>{
+                localStorage.setItem('uid',uid); localStorage.setItem('uname',n);
+                user={id:uid, name:n}; startApp();
+            });
+        }
+        
+        function login() {
+            const e=document.getElementById('le').value, p=document.getElementById('lp').value;
+            if(!e || !p) return showToast("⚠️ ইমেইল ও পাসওয়ার্ড দিন!");
+            db.ref('users').orderByChild('email').equalTo(e).once('value', s=>{
+                if(s.exists()){
+                    let u=null; s.forEach(d=>{if(d.val().password==p) u={id:d.key, ...d.val()}});
+                    if(u){ localStorage.setItem('uid',u.id); localStorage.setItem('uname',u.name); user=u; startApp(); }
+                    else showToast("❌ ভুল পাসওয়ার্ড!");
+                } else showToast("❌ অ্যাকাউন্ট পাওয়া যায়নি!");
+            });
+        }
+        function logout(){ localStorage.clear(); location.reload(); }
+
+        function startApp() {
+            db.ref('users/'+user.id).on('value', s => {
+                const val = s.val();
+                if(val) {
+                    if(val.banned === true) { alert("❌ আপনার অ্যাকাউন্টটি ব্লক করা হয়েছে!"); logout(); return; }
+                    bal = val.balance||0; 
+                    document.getElementById('bal').innerText='৳ '+bal;
+                }
+            });
+
+            document.getElementById('login-view').style.display='none';
+            document.getElementById('reg-view').style.display='none';
+            document.getElementById('main-app').style.display='block';
+            document.getElementById('uName').innerText = user.name;
+            document.getElementById('uId').innerText = user.id.substr(0,6);
+
+            db.ref('config').on('value', s=>{ if(s.val()) conf=s.val(); });
+
+            db.ref('popup_config').on('value', s => {
+                const popup = s.val();
+                if(popup && popup.active) {
+                    document.getElementById('pop-title').innerText = popup.title;
+                    document.getElementById('pop-body').innerText = popup.text;
+                    document.getElementById('popup-modal').style.display = 'flex';
+                }
+            });
+            loadMyDeposits();
+        }
+
+        function closePopup() { document.getElementById('popup-modal').style.display = 'none'; }
+
+        function tab(id, el) {
+            document.querySelectorAll('.view-section').forEach(d=>d.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(d=>d.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function pay(m) {
+            const f=document.getElementById('pForm');
+            let c='', n='', d='';
+            if(m=='bkash'){ c='#e2136e'; n=conf.bkash; d='*247#'; }
+            else if(m=='nagad'){ c='#ec1c24'; n=conf.nagad; d='*167#'; }
+            else{ c='#8c3494'; n=conf.rocket; d='*322#'; }
+            document.getElementById('pHead').style.background=c; document.getElementById('pBtn').style.background=c;
+            document.getElementById('pNum').innerText=n; document.getElementById('pDial').innerText=d;
+            f.style.display='block';
+        }
+
+        function subDep() {
+            const sender = document.getElementById('pNumSender').value;
+            const amt = document.getElementById('pAmount').value;
+            const trx = document.getElementById('pTrx').value;
+            if(!sender || sender.length < 11) return showToast("❌ আপনার সঠিক মোবাইল নাম্বার দিন");
+            if(!amt || parseInt(amt) < 100) return showToast("❌ সর্বনিম্ন ১০০ টাকা ডিপোজিট করতে হবে");
+            if(!trx || trx.length < 4) return showToast("❌ সঠিক Transaction ID দিন");
+            db.ref('deposit_requests').push({
+                userId: user.id, userName: user.name, senderNum: sender,
+                amount: parseInt(amt), trxId: trx, status: 'PENDING', date: new Date().toLocaleDateString()
+            }).then(()=>{
+                showToast("✅ রিকোয়েস্ট পাঠানো হয়েছে!");
+                document.getElementById('pNumSender').value=""; document.getElementById('pAmount').value=""; 
+                document.getElementById('pTrx').value=""; document.getElementById('pForm').style.display='none';
+            });
+        }
+
+        function loadMyDeposits() {
+            db.ref('deposit_requests').orderByChild('userId').equalTo(user.id).on('value', snap => {
+                const list = document.getElementById('historyList'); list.innerHTML = "";
+                const data = snap.val(); if(!data) { list.innerHTML = "<p style='text-align:center; color:#666;'>No history found</p>"; return; }
+                Object.entries(data).reverse().forEach(([k,v]) => {
+                    let stClass = 'st-pending';
+                    if(v.status === 'APPROVED') stClass = 'st-approved';
+                    if(v.status === 'REJECTED') stClass = 'st-rejected';
+                    const div = document.createElement('div'); div.className = 'hist-card';
+                    div.innerHTML = `
+                        <div><div style="font-weight:bold; font-size:1.1rem; color:var(--text);">৳ ${v.amount}</div><div style="font-size:0.8rem; color:#aaa;">${v.date}</div><div style="font-size:0.8rem; color:#aaa; font-family:monospace;">${v.trxId}</div></div>
+                        <div class="hist-status ${stClass}">${v.status}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function openM(cat, t) {
+            window.history.pushState({view: 'match'}, '', '#match');
+            activeCategory = cat; 
+            document.getElementById('mTitle').innerText = t;
+            document.getElementById('match-overlay').style.display = 'block';
+
+            // Reset List to Loading
+            document.getElementById('mList').innerHTML = '<div style="text-align:center; color:#ccc; margin-top:50px;"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>';
+            currentMatchData = null; 
+
+            db.ref('matches/'+cat).on('value', s => { 
+                currentMatchData = s.val(); 
+                renderMatches(); 
+            });
+        }
+
+        function renderMatches() {
+            const list=document.getElementById('mList'); list.innerHTML="";
+            activeIntervals.forEach(clearInterval); activeIntervals=[];
+            unlockIntervals.forEach(clearInterval); unlockIntervals=[];
+
+            if(!currentMatchData){ list.innerHTML="<p style='text-align:center; color:#ccc'>No matches found</p>"; return;}
+
+            const matchesArray = Object.entries(currentMatchData).map(([key, val]) => ({key, ...val}));
+            const grouped = matchesArray.reduce((acc, curr) => {
+                const d = curr.date || 'Upcoming';
+                if(!acc[d]) acc[d] = [];
+                acc[d].push(curr);
+                return acc;
+            }, {});
+
+            const sortedDates = Object.keys(grouped).sort((a, b) => {
+                const partsA = a.split(/[-/]/);
+                const partsB = b.split(/[-/]/);
+                if(partsA.length < 3 || partsB.length < 3) return 0;
+                const dateA = new Date(partsA[2], partsA[1] - 1, partsA[0]).getTime();
+                const dateB = new Date(partsB[2], partsB[1] - 1, partsB[0]).getTime();
+                return dateB - dateA;
+            });
+
+            sortedDates.forEach(date => {
+                const groupMatches = grouped[date];
+                let totalOdds = 1.0;
+                let hasOdds = false;
+                
+                const dateContainer = document.createElement('div');
+                dateContainer.className = 'date-group-container';
+                dateContainer.innerHTML = `<div class="date-header">${date}</div>`;
+                
+                groupMatches.forEach(v => {
+                    const k = v.key;
+                    const isFree = v.price == 0;
+                    const isPaid = localStorage.getItem(k); 
+                    const isPublic = v.public === true;
+                    const show = isFree || isPaid || isPublic;
+
+                    if(v.odds && !isNaN(parseFloat(v.odds))) {
+                        totalOdds *= parseFloat(v.odds);
+                        hasOdds = true;
+                    }
+
+                    const cardDiv = document.createElement('div');
+                    let statusHtml = '';
+                    let borderClass = '';
+                    
+                    if(v.status === 'WON') {
+                        statusHtml = '<span class="status-badge st-won">WON <i class="fas fa-check-circle"></i></span>';
+                    } else if(v.status === 'LOST') {
+                        borderClass = 'lost';
+                        statusHtml = '<span class="status-badge st-lost">LOST <i class="fas fa-times-circle"></i></span>';
+                    } else {
+                        statusHtml = '<span class="status-badge st-pending">PENDING <i class="far fa-clock"></i></span>';
+                    }
+
+                    const contentHtml = `
+                        <div class="match-content">
+                            <div style="margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+                                <div class="slip-league">${v.league || 'League'}</div>
+                                <div style="font-size:0.8rem; color:#ccc;"><i class="far fa-clock"></i> ${v.time}</div>
+                            </div>
+                            <div class="slip-teams">
+                                ${v.team1} <span class="vs-text">vs</span> ${v.team2}
+                            </div>
+                            <div class="info-box">
+                                <div style="color:white;">
+                                    <span style="color:#fbbf24; font-weight:bold;">Tips:</span> ${v.tip}
+                                </div>
+                                <div style="color:white;">
+                                    <span style="color:#22d3ee; font-weight:bold;">Odds:</span> ${v.odds}
+                                </div>
+                            </div>
+                            <div id="timer-content-${k}" style="font-size:0.8rem; color:#cbd5e1; margin-top:5px; text-align:center;"></div>
+                            ${statusHtml ? `<div style="text-align:right; margin-top:5px;">${statusHtml}</div>` : ''}
+                        </div>
+                    `;
+
+                    if(!show) {
+                        const storageKey = `fake_data_${k}`;
+                        const now = Date.now();
+                        let savedData = JSON.parse(localStorage.getItem(storageKey));
+
+                        if (!savedData || savedData.count < v.fakeUnlock) {
+                            savedData = {
+                                count: v.fakeUnlock,
+                                nextUpdate: now + (Math.random() * 300000) + 300000 
+                            };
+                            localStorage.setItem(storageKey, JSON.stringify(savedData));
+                        }
+
+                        if (now > savedData.nextUpdate) {
+                            savedData.count += 1;
+                            savedData.nextUpdate = now + (Math.random() * 300000) + 300000;
+                            localStorage.setItem(storageKey, JSON.stringify(savedData));
+                        }
+                        
+                        let displayCount = savedData.count;
+
+                        cardDiv.className = 'slip-card locked-state';
+                        cardDiv.innerHTML = `
+                            ${contentHtml}
+                            <div class="lock-overlay">
+                                <button class="unlock-btn" onclick="ul('${k}',${v.price})">
+                                    <i class="fas fa-lock"></i> Unlock ৳${v.price}
+                                </button>
+                                <div id="timer-locked-${k}" class="countdown-timer" style="color:#fbbf24; font-family:monospace; margin-top:5px; text-shadow:1px 1px 2px black;"></div>
+                                <div class="fake-unlock-text" style="color:#fbbf24; font-size:0.8rem; margin-top:5px; text-shadow:1px 1px 2px black;">
+                                    <i class="fas fa-unlock-alt"></i> গত ৩০ মিনিটে <span id="fake-cnt-${k}">${displayCount}</span> আনলক করেছে
+                                </div>
+                            </div>
+                        `;
+                        startTimer(v.date, v.time, `timer-locked-${k}`);
+
+                        const timeToNext = savedData.nextUpdate - now;
+                        if(timeToNext > 0) {
+                           const tmOut = setTimeout(() => {
+                               renderMatches();
+                           }, timeToNext + 1000);
+                           unlockIntervals.push(tmOut); 
+                        }
+
+                    } else {
+                        cardDiv.className = `slip-card ${borderClass}`;
+                        cardDiv.innerHTML = contentHtml;
+                        startTimer(v.date, v.time, `timer-content-${k}`);
+                    }
+                    dateContainer.appendChild(cardDiv);
+                });
+
+                if(hasOdds) {
+                    const footer = document.createElement('div');
+                    footer.className = 'total-odds-footer';
+                    footer.innerHTML = `Total Odds: ${totalOdds.toFixed(2)}`;
+                    dateContainer.appendChild(footer);
+                }
+
+                list.appendChild(dateContainer);
+            });
+        }
+
+        function closeM(fromHistory = false) {
+            document.getElementById('match-overlay').style.display='none';
+            db.ref('matches').off(); 
+            currentMatchData = null; 
+            activeIntervals.forEach(clearInterval); 
+            unlockIntervals.forEach(id => { clearTimeout(id); clearInterval(id); });
+            activeIntervals=[];
+            unlockIntervals=[];
+            if(!fromHistory) { window.history.back(); }
+        }
+
+        function startTimer(dateStr, timeStr, elemId) {
+            if(!dateStr || !timeStr) return;
+            const parts = dateStr.split(/[-/]/); if(parts.length < 3) return;
+            let year = parts[2]; if(year.length === 2) year = "20" + year; 
+            const isoDate = `${year}-${parts[1]}-${parts[0]}T${timeStr}:00`;
+            const target = new Date(isoDate).getTime();
+            if(isNaN(target)) return;
+            const interval = setInterval(() => {
+                const now = new Date().getTime(); const dist = target - now;
+                const el = document.getElementById(elemId);
+                if(!el) { clearInterval(interval); return; } 
+                if (dist < 0) { el.innerHTML = ""; clearInterval(interval); return; }
+                const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((dist % (1000 * 60)) / 1000);
+                el.innerHTML = `<i class="fas fa-clock"></i> Starts in: ${h}h ${m}m ${s}s`;
+            }, 1000);
+            activeIntervals.push(interval);
+        }
+
+        function ul(k, p) {
+            if(bal >= p) {
+                if(confirm("Unlock for ৳"+p+"?")) {
+                    db.ref('users/'+user.id).update({balance: bal-p}).then(()=>{
+                        localStorage.setItem(k, 'true');
+                        if(activeCategory && k) { db.ref('matches/' + activeCategory + '/' + k + '/unlockCount').transaction(count => { return (count || 0) + 1; }); }
+                        showToast("✅ আনলক সফল হয়েছে!"); 
+                        
+                        // REAL LIVE NOTIFICATION TRIGGER
+                        showLiveNotif("You", "Match", p);
+                        
+                        renderMatches(); 
+                    });
+                }
+            } else showToast("❌ পর্যাপ্ত ব্যালেন্স নেই!");
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(()=>t.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
