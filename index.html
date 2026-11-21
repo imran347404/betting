@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tips King — Firebase Admin Console</title>
+  <title>Football Fixed — Firebase Admin Console</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -39,6 +39,23 @@
     .small { font-size: 12px; }
     .stack-sm { display: flex; flex-direction: column; gap: 10px; }
 
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-emblem {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #010101;
+      border: 1.5px solid rgba(255, 215, 0, 0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.22);
+    }
     .brand-badge {
       font-weight: 800;
       font-size: 16px;
@@ -52,7 +69,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: radial-gradient(circle at top, rgba(91, 33, 182, 0.35), var(--bg) 60%);
+      background: radial-gradient(circle at top, rgba(255, 215, 0, 0.14), var(--bg) 60%);
     }
     .auth-card {
       width: 100%;
@@ -62,7 +79,7 @@
       border-radius: 20px;
       padding: 28px;
     }
-    .auth-card h1 { margin: 10px 0 6px; font-size: 24px; }
+    .auth-card h1 { margin: 12px 0 6px; font-size: 24px; }
     .status-box {
       background: rgba(34, 197, 94, 0.1);
       border: 1px solid rgba(34, 197, 94, 0.35);
@@ -94,7 +111,7 @@
       font-family: inherit;
       font-size: 13px;
     }
-    textarea { min-height: 110px; resize: vertical; }
+    textarea { min-height: 100px; resize: vertical; }
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--gold);
@@ -128,10 +145,12 @@
       justify-content: center;
       gap: 6px;
     }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-block { width: 100%; }
     .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
     .btn-primary { background: var(--orange); color: #fff; }
     .btn-gold { background: var(--gold); color: #000; }
+    .btn-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.45); }
     .btn-secondary { background: var(--card-alt); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: rgba(239, 68, 68, 0.16); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
     .btn-icon { background: transparent; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
@@ -150,7 +169,7 @@
 
     .admin-shell { display: flex; min-height: 100vh; }
     .sidebar {
-      width: 260px;
+      width: 268px;
       background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex;
@@ -178,12 +197,24 @@
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
     .nav-item:hover { background: rgba(255, 255, 255, 0.04); color: var(--text); }
     .nav-item.active {
       background: rgba(255, 215, 0, 0.14);
       color: var(--gold);
       font-weight: 600;
+    }
+    .nav-badge {
+      background: var(--orange);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
     }
     .sidebar-footer { padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
 
@@ -230,10 +261,21 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 12px;
     }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subcard {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 11px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
     th { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
     .actions-cell { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -290,7 +332,16 @@
   <!-- Auth Gate -->
   <section id="auth-screen" class="auth-screen">
     <div class="auth-card">
-      <div class="brand-badge">TIPS <span>KING</span> ADMIN</div>
+      <div class="brand-row">
+        <div class="brand-emblem" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 9L7.5 4.5L12 7.5L16.5 4.5L19 9H5Z" fill="#ffd700"/>
+            <circle cx="12" cy="15" r="5.5" stroke="#ffd700" stroke-width="1.8" fill="#111827"/>
+            <polygon points="12,12.2 14.3,13.9 13.4,16.6 10.6,16.6 9.7,13.9" fill="#ffd700"/>
+          </svg>
+        </div>
+        <div class="brand-badge">FOOTBALL <span>FIXED</span> ADMIN</div>
+      </div>
       <h1>Control Center</h1>
       <p class="muted small">
         Connected directly to Firebase project <code>gen-lang-client-0348449679</code> and Firestore database
@@ -298,7 +349,7 @@
       </p>
 
       <div class="status-box">
-        <div><strong>Firebase SDK Ready</strong> — Pre-configured for Tips King Global.</div>
+        <div><strong>Firebase SDK Ready</strong> — Football Fixed Global (BDT &amp; USDT Deposit Console).</div>
         <label class="checkbox-row" style="margin-top:8px;">
           <input id="cfg-use-emulator" type="checkbox" />
           <span>Developer Mode: Use Local Emulators (:9099 / :8085)</span>
@@ -325,26 +376,37 @@
   <div id="admin-shell" class="admin-shell hidden">
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-top">
-        <div class="brand-badge">TIPS <span>KING</span></div>
+        <div class="brand-row">
+          <div class="brand-emblem" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M5 9L7.5 4.5L12 7.5L16.5 4.5L19 9H5Z" fill="#ffd700"/>
+              <circle cx="12" cy="15" r="5.5" stroke="#ffd700" stroke-width="1.8" fill="#111827"/>
+              <polygon points="12,12.2 14.3,13.9 13.4,16.6 10.6,16.6 9.7,13.9" fill="#ffd700"/>
+            </svg>
+          </div>
+          <div class="brand-badge">FOOTBALL <span>FIXED</span></div>
+        </div>
         <button id="close-sidebar-btn" type="button" class="btn-icon mobile-only" aria-label="Close menu">&times;</button>
       </div>
       <nav id="sidebar-nav" class="sidebar-nav">
-        <button data-section="dashboard" class="nav-item active">Dashboard</button>
-        <button data-section="users" class="nav-item">Users &amp; Coins</button>
-        <button data-section="matches" class="nav-item">Matches &amp; Tips</button>
-        <button data-section="categories" class="nav-item">Categories</button>
-        <button data-section="packages" class="nav-item">Coin Packages</button>
-        <button data-section="transactions" class="nav-item">Transactions &amp; Play</button>
-        <button data-section="unlocks" class="nav-item">Unlocked Matches</button>
-        <button data-section="notifications" class="nav-item">Notifications</button>
-        <button data-section="sliders" class="nav-item">Sliders &amp; Banners</button>
-        <button data-section="popup" class="nav-item">Popup Announcement</button>
-        <button data-section="settings" class="nav-item">App &amp; Share Settings</button>
-        <button data-section="support" class="nav-item">Support Links</button>
-        <button data-section="legal" class="nav-item">Privacy / Terms / About</button>
-        <button data-section="analytics" class="nav-item">Analytics</button>
-        <button data-section="logs" class="nav-item">Admin Logs</button>
-        <button data-section="admins" class="nav-item">Security &amp; Admins</button>
+        <button data-section="dashboard" class="nav-item active"><span>Dashboard</span></button>
+        <button data-section="deposits" class="nav-item"><span>Deposit Requests</span><span id="pending-deposits-badge" class="nav-badge hidden">0</span></button>
+        <button data-section="payments" class="nav-item"><span>Payment Accounts</span></button>
+        <button data-section="users" class="nav-item"><span>Users &amp; Coins</span></button>
+        <button data-section="matches" class="nav-item"><span>Matches &amp; Tips</span></button>
+        <button data-section="categories" class="nav-item"><span>Categories</span></button>
+        <button data-section="packages" class="nav-item"><span>Coin Packages</span></button>
+        <button data-section="transactions" class="nav-item"><span>Coin Ledger</span></button>
+        <button data-section="unlocks" class="nav-item"><span>Unlocked Matches</span></button>
+        <button data-section="notifications" class="nav-item"><span>Notifications</span></button>
+        <button data-section="sliders" class="nav-item"><span>Sliders &amp; Banners</span></button>
+        <button data-section="popup" class="nav-item"><span>Popup Announcement</span></button>
+        <button data-section="settings" class="nav-item"><span>App &amp; Share Settings</span></button>
+        <button data-section="support" class="nav-item"><span>Support Links</span></button>
+        <button data-section="legal" class="nav-item"><span>Privacy / Terms / About</span></button>
+        <button data-section="analytics" class="nav-item"><span>Analytics</span></button>
+        <button data-section="logs" class="nav-item"><span>Admin Logs</span></button>
+        <button data-section="admins" class="nav-item"><span>Security &amp; Admins</span></button>
       </nav>
       <div class="sidebar-footer">
         <div id="admin-identity" class="small muted"></div>
@@ -396,16 +458,23 @@
       collection,
       doc,
       getDoc,
+      getDocs,
       setDoc,
       updateDoc,
       deleteDoc,
+      writeBatch,
       onSnapshot,
       runTransaction,
       serverTimestamp,
       query,
+      where,
       orderBy,
       limit,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import {
+      getFunctions,
+      httpsCallable,
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
     import {
       getStorage,
       ref as storageRef,
@@ -425,11 +494,12 @@
     };
 
     const DATABASE_ID = "ai-studio-android-bdtipski-65a2f596-fcb8-419b-a733-80c9708133ef";
-    const EMU_FLAG_KEY = "tipsking_admin_use_emulator";
+    const EMU_FLAG_KEY = "footballfixed_admin_use_emulator";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app, DATABASE_ID);
+    const functions = getFunctions(app, "us-central1");
     const storage = getStorage(app);
 
     const $ = (id) => document.getElementById(id);
@@ -456,13 +526,15 @@
       categories: [],
       matches: [],
       packages: [],
+      deposits: [],
+      depositFilter: "pending",
       transactions: [],
       verifications: [],
       sliders: [],
       notifications: [],
       logs: [],
       admins: [],
-      settings: { app: {}, support: {}, popup: {}, legal: {} },
+      settings: { app: {}, support: {}, popup: {}, legal: {}, payments: {} },
       unsubs: [],
       userSearch: "",
     };
@@ -471,7 +543,7 @@
       const el = $("toast-banner");
       el.textContent = msg;
       el.className = `toast${isError ? " error" : ""}`;
-      setTimeout(() => el.classList.add("hidden"), 4200);
+      setTimeout(() => el.classList.add("hidden"), 4500);
     }
 
     function showModal(title, html, onBind) {
@@ -580,7 +652,7 @@
       document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
       btn.classList.add("active");
       store.section = btn.dataset.section;
-      $("section-title").textContent = btn.textContent;
+      $("section-title").textContent = btn.querySelector("span")?.textContent || btn.textContent;
       $("sidebar").classList.remove("open");
       renderSection();
     };
@@ -590,10 +662,23 @@
       store.unsubs = [];
     }
 
+    function updatePendingDepositBadge() {
+      const pendingCount = store.deposits.filter((d) => (d.status || "pending") === "pending").length;
+      const badge = $("pending-deposits-badge");
+      if (!badge) return;
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount > 99 ? "99+" : String(pendingCount);
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
     function subscribeAll() {
-      const watchCol = (colName, targetKey, maxDocs = 200) => {
+      const watchCol = (colName, targetKey, maxDocs = 250) => {
         const unsub = onSnapshot(query(collection(db, colName), limit(maxDocs)), (snap) => {
           store[targetKey] = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          if (targetKey === "deposits") updatePendingDepositBadge();
           if (shouldRefreshOnUpdate(targetKey)) renderSection();
         });
         store.unsubs.push(unsub);
@@ -603,6 +688,7 @@
       watchCol("categories", "categories", 100);
       watchCol("matches", "matches", 300);
       watchCol("coinPackages", "packages", 50);
+      watchCol("depositRequests", "deposits", 300);
       watchCol("coinTransactions", "transactions", 300);
       watchCol("purchaseVerifications", "verifications", 200);
       watchCol("sliders", "sliders", 50);
@@ -615,10 +701,10 @@
       });
       store.unsubs.push(logsUnsub);
 
-      ["app", "support", "popup", "legal"].forEach((key) => {
+      ["app", "support", "popup", "legal", "payments"].forEach((key) => {
         const unsub = onSnapshot(doc(db, "settings", key), (snap) => {
           store.settings[key] = snap.exists() ? snap.data() : {};
-          if (["settings", "support", "popup", "legal"].includes(store.section)) renderSection();
+          if (["settings", "support", "popup", "legal", "payments"].includes(store.section)) renderSection();
         });
         store.unsubs.push(unsub);
       });
@@ -626,13 +712,14 @@
 
     function shouldRefreshOnUpdate(key) {
       const map = {
-        dashboard: ["users", "matches", "categories", "transactions", "verifications"],
-        analytics: ["users", "matches", "categories", "transactions", "verifications"],
+        dashboard: ["users", "matches", "categories", "deposits", "transactions"],
+        analytics: ["users", "matches", "categories", "deposits", "transactions"],
+        deposits: ["deposits"],
         users: ["users"],
         matches: ["matches", "categories"],
         categories: ["categories", "matches"],
         packages: ["packages"],
-        transactions: ["transactions", "verifications"],
+        transactions: ["transactions", "deposits"],
         unlocks: ["transactions", "matches", "users"],
         notifications: ["notifications"],
         sliders: ["sliders"],
@@ -645,6 +732,8 @@
       const container = $("section-container");
       switch (store.section) {
         case "dashboard": return renderDashboard(container);
+        case "deposits": return renderDeposits(container);
+        case "payments": return renderPaymentSettings(container);
         case "users": return renderUsers(container);
         case "matches": return renderMatches(container);
         case "categories": return renderCategories(container);
@@ -663,39 +752,57 @@
       }
     }
 
+    function navigateToSection(sectionKey) {
+      const btn = document.querySelector(`[data-section="${sectionKey}"]`);
+      if (btn) btn.click();
+    }
+
     function renderDashboard(el) {
       const totalUsers = store.users.length;
       const activeUsers = store.users.filter((u) => u.accountStatus === "active").length;
+      const pendingDeposits = store.deposits.filter((d) => (d.status || "pending") === "pending").length;
       const publishedMatches = store.matches.filter((m) => m.isPublished).length;
-      const vipMatches = store.matches.filter((m) => m.isVip).length;
       const totalUnlocks = store.transactions.filter((t) => t.type === "match_unlock").length;
-      const coinsPurchased = store.transactions
-        .filter((t) => t.type === "purchase" && t.amount > 0)
+      const coinsCredited = store.transactions
+        .filter((t) => (t.type === "purchase" || t.type === "admin_adjustment") && t.amount > 0)
         .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
       el.innerHTML = `
         <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">Pending Deposits</div><div class="stat-value" style="color:${pendingDeposits > 0 ? "var(--orange)" : "var(--green)"}">${pendingDeposits}</div></div>
           <div class="stat-card"><div class="stat-label">Registered Users</div><div class="stat-value">${totalUsers}</div></div>
           <div class="stat-card"><div class="stat-label">Active Accounts</div><div class="stat-value">${activeUsers}</div></div>
           <div class="stat-card"><div class="stat-label">Published Matches</div><div class="stat-value">${publishedMatches}</div></div>
-          <div class="stat-card"><div class="stat-label">VIP Matches</div><div class="stat-value">${vipMatches}</div></div>
           <div class="stat-card"><div class="stat-label">Total VIP Unlocks</div><div class="stat-value">${totalUnlocks}</div></div>
-          <div class="stat-card"><div class="stat-label">Verified Coins Purchased</div><div class="stat-value">${coinsPurchased}</div></div>
+          <div class="stat-card"><div class="stat-label">Total Coins Credited</div><div class="stat-value">${coinsCredited}</div></div>
         </div>
+
+        ${pendingDeposits > 0 ? `
+          <div class="panel-card" style="margin-bottom:20px;border-color:rgba(234,88,12,0.65);">
+            <div class="panel-header" style="margin-bottom:0;">
+              <div>
+                <h3 style="margin:0;color:var(--orange);">${pendingDeposits} Deposit Request${pendingDeposits > 1 ? "s" : ""} Awaiting Approval</h3>
+                <p class="small muted" style="margin:4px 0 0;">Verify BDT (bKash / Nagad / Rocket) or USDT (Binance) Transaction IDs to credit user coins.</p>
+              </div>
+              <button id="goto-deposits-btn" class="btn btn-primary">Review Deposits</button>
+            </div>
+          </div>
+        ` : ""}
 
         <div class="panel-card">
           <div class="panel-header">
             <div>
               <h3 style="margin:0;">Quick Setup &amp; Global Catalog Bootstrap</h3>
               <p class="small muted" style="margin:4px 0 0;">
-                Initialize the 8 global categories (FREE + VIP), 5 Google Play Coin Packages (100/200/500/1000/2000), and default Tips King settings.
+                Initialize 8 global match categories, 5 dual-currency Coin Packages (BDT &amp; USDT), Payment Accounts doc, and Football Fixed defaults.
               </p>
             </div>
             <button id="seed-defaults-btn" class="btn btn-gold">Seed Initial Categories &amp; Packages</button>
           </div>
-          <p class="small muted">Edit the <code>YOUR_PLAY_PRODUCT_ID_*</code> SKUs in <strong>Coin Packages</strong> to match your Google Play Console in-app products.</p>
+          <p class="small muted">After seeding, configure your bKash, Nagad, Rocket, and Binance Pay IDs inside <strong>Payment Accounts</strong>.</p>
         </div>
       `;
+      if ($("goto-deposits-btn")) $("goto-deposits-btn").onclick = () => navigateToSection("deposits");
       $("seed-defaults-btn").onclick = seedDefaults;
     }
 
@@ -721,11 +828,11 @@
         }
 
         const defaultPackages = [
-          { id: "pkg_100", title: "100 Coins", coins: 100, productId: "YOUR_PLAY_PRODUCT_ID_100", displayPrice: "$0.99", badgeText: "Starter", sortOrder: 1 },
-          { id: "pkg_200", title: "200 Coins", coins: 200, productId: "YOUR_PLAY_PRODUCT_ID_200", displayPrice: "$1.99", badgeText: "", sortOrder: 2 },
-          { id: "pkg_500", title: "500 Coins", coins: 500, productId: "YOUR_PLAY_PRODUCT_ID_500", displayPrice: "$4.99", badgeText: "Popular", sortOrder: 3 },
-          { id: "pkg_1000", title: "1000 Coins", coins: 1000, productId: "YOUR_PLAY_PRODUCT_ID_1000", displayPrice: "$8.99", badgeText: "Best Value", sortOrder: 4 },
-          { id: "pkg_2000", title: "2000 Coins", coins: 2000, productId: "YOUR_PLAY_PRODUCT_ID_2000", displayPrice: "$16.99", badgeText: "VIP Pack", sortOrder: 5 },
+          { id: "pkg_100", title: "100 Coins", coins: 100, productId: "ff_coins_100", displayPrice: "1.00 USDT", priceBdt: "120 BDT", priceUsdt: "1.00 USDT", badgeText: "Starter", sortOrder: 1 },
+          { id: "pkg_200", title: "200 Coins", coins: 200, productId: "ff_coins_200", displayPrice: "2.00 USDT", priceBdt: "240 BDT", priceUsdt: "2.00 USDT", badgeText: null, sortOrder: 2 },
+          { id: "pkg_500", title: "500 Coins", coins: 500, productId: "ff_coins_500", displayPrice: "5.00 USDT", priceBdt: "580 BDT", priceUsdt: "5.00 USDT", badgeText: "Popular", sortOrder: 3 },
+          { id: "pkg_1000", title: "1000 Coins", coins: 1000, productId: "ff_coins_1000", displayPrice: "9.50 USDT", priceBdt: "1150 BDT", priceUsdt: "9.50 USDT", badgeText: "Best Value", sortOrder: 4 },
+          { id: "pkg_2000", title: "2000 Coins", coins: 2000, productId: "ff_coins_2000", displayPrice: "18.00 USDT", priceBdt: "2200 BDT", priceUsdt: "18.00 USDT", badgeText: "VIP Pack", sortOrder: 5 },
         ];
         for (const p of defaultPackages) {
           await setDoc(doc(db, "coinPackages", p.id), {
@@ -736,15 +843,39 @@
           }, { merge: true });
         }
 
+        const existingPayments = await getDoc(doc(db, "settings", "payments"));
+        if (!existingPayments.exists()) {
+          await setDoc(doc(db, "settings", "payments"), {
+            bkashEnabled: true,
+            bkashNumber: "",
+            bkashLabel: "Personal / Send Money",
+            bkashNote: "Send exact BDT amount via bKash Send Money and submit your TrxID.",
+            nagadEnabled: true,
+            nagadNumber: "",
+            nagadLabel: "Personal / Send Money",
+            nagadNote: "Send exact BDT amount via Nagad Send Money and submit your TrxID.",
+            rocketEnabled: true,
+            rocketNumber: "",
+            rocketLabel: "Personal / Send Money",
+            rocketNote: "Send exact BDT amount via Rocket Send Money and submit your TrxID.",
+            binanceEnabled: true,
+            binancePayId: "",
+            usdtAddress: "",
+            usdtNetwork: "TRC20 / BEP20",
+            usdtNote: "Send exact USDT via Binance Pay or wallet transfer, then submit your TxID / Order ID.",
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+        }
+
         await setDoc(doc(db, "settings", "app"), {
-          appName: "Tips King",
+          appName: "Football Fixed",
           currentVersionName: "1.0",
           currentVersionCode: 1,
           minSupportedVersionCode: 1,
           minSupportedVersionName: "1.0",
-          updateMessage: "A new version of Tips King is available on Google Play.",
+          updateMessage: "A new version of Football Fixed is available. Please update to continue.",
           updateUrl: "https://play.google.com/store/apps/details?id=com.aistudio.bdtipsking.kxmpzq",
-          shareMessage: "Check out Tips King for daily global football match insights & VIP tips!",
+          shareMessage: "Check out Football Fixed for daily global football match insights & VIP tips!",
           maintenanceMode: false,
           maintenanceMessage: "Scheduled maintenance in progress.",
           allowAdminBypass: true,
@@ -753,11 +884,323 @@
           updatedAt: serverTimestamp(),
         }, { merge: true });
 
-        await logAdminAction(store.user, "seed_defaults", "catalog", "initial", "Seeded 8 categories, 5 coin packages, and Tips King app settings");
-        toast("Seeded initial categories, coin packages, and Tips King settings.");
+        await logAdminAction(store.user, "seed_defaults", "catalog", "initial", "Seeded 8 categories, 5 BDT/USDT packages, payment settings, and Football Fixed app settings");
+        toast("Seeded Football Fixed defaults successfully.");
       } catch (err) {
         toast(err.message, true);
       }
+    }
+
+    function renderDeposits(el) {
+      const sorted = [...store.deposits].sort((a, b) => {
+        const ta = a.createdAt?.seconds || 0;
+        const tb = b.createdAt?.seconds || 0;
+        return tb - ta;
+      });
+      const counts = {
+        pending: sorted.filter((d) => (d.status || "pending") === "pending").length,
+        approved: sorted.filter((d) => d.status === "approved").length,
+        rejected: sorted.filter((d) => d.status === "rejected").length,
+        all: sorted.length,
+      };
+      const filtered = store.depositFilter === "all"
+        ? sorted
+        : sorted.filter((d) => (d.status || "pending") === store.depositFilter);
+
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 style="margin:0;">Manual Deposit Requests (${filtered.length})</h3>
+              <p class="small muted" style="margin:4px 0 0;">Verify BDT (bKash / Nagad / Rocket) or USDT (Binance) Transaction IDs before crediting Coins.</p>
+            </div>
+            <div class="preset-row">
+              ${["pending", "approved", "rejected", "all"].map((f) => `
+                <button class="btn btn-sm ${store.depositFilter === f ? "btn-gold" : "btn-secondary"}" data-dep-filter="${f}">
+                  ${f.toUpperCase()} (${counts[f]})
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Package / Amount</th>
+                  <th>Method &amp; Sender</th>
+                  <th>Transaction ID</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filtered.map((d) => {
+                  const status = d.status || "pending";
+                  const statusClass = status === "approved" ? "pill-green" : status === "rejected" ? "pill-red" : "pill-gold";
+                  return `
+                    <tr>
+                      <td>
+                        <strong>${esc(d.userName || "Player")}</strong><br>
+                        <span class="small muted">${esc(d.userEmail)}</span><br>
+                        <code class="small">${esc(d.userId)}</code>
+                      </td>
+                      <td>
+                        <strong>${d.coins} Coins</strong><br>
+                        <span class="pill pill-cyan">${esc(d.currency)} • ${esc(d.amountDisplay)}</span>
+                      </td>
+                      <td>
+                        <strong>${esc((d.paymentMethod || "").toUpperCase())}</strong>
+                        ${d.senderNumber ? `<br><span class="small muted">From: ${esc(d.senderNumber)}</span>` : ""}
+                      </td>
+                      <td>
+                        <code>${esc(d.transactionId)}</code>
+                        ${d.adminNote ? `<br><span class="small muted">Note: ${esc(d.adminNote)}</span>` : ""}
+                      </td>
+                      <td>
+                        <span class="pill ${statusClass}">${esc(status.toUpperCase())}</span>
+                        ${d.processedByEmail ? `<br><span class="small muted">${esc(d.processedByEmail)}</span>` : ""}
+                      </td>
+                      <td class="actions-cell">
+                        ${status === "pending" ? `
+                          <button class="btn btn-green btn-sm" data-approve-dep="${esc(d.id)}">Approve</button>
+                          <button class="btn btn-danger btn-sm" data-reject-dep="${esc(d.id)}">Reject</button>
+                        ` : `<span class="small muted">Processed</span>`}
+                      </td>
+                    </tr>
+                  `;
+                }).join("") || `<tr><td colspan="6" class="muted">No ${esc(store.depositFilter)} deposit requests.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      el.querySelectorAll("[data-dep-filter]").forEach((btn) => {
+        btn.onclick = () => {
+          store.depositFilter = btn.dataset.depFilter;
+          renderDeposits(el);
+        };
+      });
+      el.querySelectorAll("[data-approve-dep]").forEach((btn) => {
+        btn.onclick = () => openApproveDepositModal(btn.dataset.approveDep);
+      });
+      el.querySelectorAll("[data-reject-dep]").forEach((btn) => {
+        btn.onclick = () => openRejectDepositModal(btn.dataset.rejectDep);
+      });
+    }
+
+    function openApproveDepositModal(reqId) {
+      const dep = store.deposits.find((d) => d.id === reqId);
+      if (!dep) return;
+      showModal("Approve Deposit Request", `
+        <form id="approve-dep-form" class="stack-sm">
+          <div class="subcard">
+            <div><strong>${esc(dep.userName || "Player")}</strong> (${esc(dep.userEmail)})</div>
+            <div class="small muted">Coins to credit: <strong style="color:var(--gold)">+${dep.coins} Coins</strong></div>
+            <div class="small muted">Payment: ${esc((dep.paymentMethod || "").toUpperCase())} • ${esc(dep.amountDisplay)} (${esc(dep.currency)})</div>
+            ${dep.senderNumber ? `<div class="small muted">Sender: <code>${esc(dep.senderNumber)}</code></div>` : ""}
+            <div class="small muted">Transaction ID: <code>${esc(dep.transactionId)}</code></div>
+          </div>
+          <label class="small">Optional Approval Note</label>
+          <input id="dep-approve-note" placeholder="e.g. Verified TrxID" value="Verified and credited" />
+          <button type="submit" class="btn btn-gold">Confirm Approve &amp; Credit +${dep.coins} Coins</button>
+        </form>
+      `, () => {
+        $("approve-dep-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const note = $("dep-approve-note").value.trim() || null;
+          try {
+            await runTransaction(db, async (tx) => {
+              const depRef = doc(db, "depositRequests", reqId);
+              const depSnap = await tx.get(depRef);
+              if (!depSnap.exists()) throw new Error("Deposit request not found.");
+              const depData = depSnap.data();
+              if (depData.status !== "pending") {
+                throw new Error(`Request already processed (${depData.status}).`);
+              }
+
+              const userRef = doc(db, "users", depData.userId);
+              const userSnap = await tx.get(userRef);
+              if (!userSnap.exists()) throw new Error("User profile does not exist.");
+
+              const coins = Number(depData.coins || 0);
+              if (coins <= 0) throw new Error("Invalid coin amount on request.");
+
+              const curBalance = Number(userSnap.data().coinBalance || 0);
+              const curPurchased = Number(userSnap.data().totalCoinsPurchased || 0);
+              const nextBalance = curBalance + coins;
+
+              tx.update(userRef, {
+                coinBalance: nextBalance,
+                totalCoinsPurchased: curPurchased + coins,
+                updatedAt: serverTimestamp(),
+              });
+
+              tx.update(depRef, {
+                status: "approved",
+                adminNote: note,
+                processedByEmail: store.user.email || "admin",
+                processedAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+              });
+
+              const txRef = doc(db, "coinTransactions", `dep_${reqId}`);
+              tx.set(txRef, {
+                userId: depData.userId,
+                type: "purchase",
+                amount: coins,
+                balanceAfter: nextBalance,
+                title: `Deposit Approved (+${coins} Coins)`,
+                description: `${depData.currency} via ${String(depData.paymentMethod || "").toUpperCase()} • TrxID: ${depData.transactionId}`.slice(0, 240),
+                referenceId: reqId,
+                status: "completed",
+                adminEmail: store.user.email || "admin",
+                createdAt: serverTimestamp(),
+              });
+            });
+
+            await logAdminAction(store.user, "approve_deposit", "depositRequest", reqId, `Credited +${dep.coins} coins to ${dep.userId} (TrxID: ${dep.transactionId})`);
+            closeModal();
+            toast(`Approved! Credited +${dep.coins} Coins.`);
+          } catch (err) {
+            toast(err.message, true);
+          }
+        };
+      });
+    }
+
+    function openRejectDepositModal(reqId) {
+      const dep = store.deposits.find((d) => d.id === reqId);
+      if (!dep) return;
+      showModal("Reject Deposit Request", `
+        <form id="reject-dep-form" class="stack-sm">
+          <p class="small muted">Rejecting this request adds <strong>0 coins</strong> and shows your rejection reason in the user's Deposit Verification list.</p>
+          <div class="subcard small">
+            <div><strong>${esc(dep.userName || "Player")}</strong> • ${dep.coins} Coins (${esc(dep.amountDisplay)})</div>
+            <div>Method: ${esc((dep.paymentMethod || "").toUpperCase())} • TrxID: <code>${esc(dep.transactionId)}</code></div>
+          </div>
+          <label class="small">Rejection Reason</label>
+          <input id="dep-reject-note" placeholder="e.g. Transaction ID not found / Incorrect amount" required />
+          <button type="submit" class="btn btn-danger">Confirm Reject Request</button>
+        </form>
+      `, () => {
+        $("reject-dep-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const note = $("dep-reject-note").value.trim() || "Payment verification failed";
+          try {
+            await runTransaction(db, async (tx) => {
+              const depRef = doc(db, "depositRequests", reqId);
+              const depSnap = await tx.get(depRef);
+              if (!depSnap.exists()) throw new Error("Deposit request not found.");
+              if (depSnap.data().status !== "pending") {
+                throw new Error(`Request already processed (${depSnap.data().status}).`);
+              }
+              tx.update(depRef, {
+                status: "rejected",
+                adminNote: note.slice(0, 300),
+                processedByEmail: store.user.email || "admin",
+                processedAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+              });
+            });
+            await logAdminAction(store.user, "reject_deposit", "depositRequest", reqId, `Rejected ${dep.transactionId}: ${note}`);
+            closeModal();
+            toast("Deposit request rejected (no coins credited).");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        };
+      });
+    }
+
+    function renderPaymentSettings(el) {
+      const p = store.settings.payments || {};
+      el.innerHTML = `
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 style="margin:0;">Manual Payment Accounts (BDT &amp; USDT)</h3>
+              <p class="small muted" style="margin:4px 0 0;">Live numbers, IDs, and instructions displayed inside the Android Coin Store.</p>
+            </div>
+          </div>
+          <form id="payments-cfg-form" class="stack-sm">
+            <div class="subcard stack-sm">
+              <strong style="color:var(--gold);">BDT — bKash</strong>
+              <label class="checkbox-row"><input id="pay-bkash-en" type="checkbox" ${p.bkashEnabled !== false ? "checked" : ""} /> Enable bKash</label>
+              <div class="form-grid">
+                <div><label class="small">bKash Number</label><input id="pay-bkash-num" value="${esc(p.bkashNumber || "")}" placeholder="01XXXXXXXXX" /></div>
+                <div><label class="small">Account Type / Label</label><input id="pay-bkash-lbl" value="${esc(p.bkashLabel || "Personal / Send Money")}" /></div>
+              </div>
+              <label class="small">bKash Instructions</label><input id="pay-bkash-note" value="${esc(p.bkashNote || "Send exact BDT amount via bKash Send Money and submit your TrxID.")}" />
+            </div>
+
+            <div class="subcard stack-sm">
+              <strong style="color:var(--gold);">BDT — Nagad</strong>
+              <label class="checkbox-row"><input id="pay-nagad-en" type="checkbox" ${p.nagadEnabled !== false ? "checked" : ""} /> Enable Nagad</label>
+              <div class="form-grid">
+                <div><label class="small">Nagad Number</label><input id="pay-nagad-num" value="${esc(p.nagadNumber || "")}" placeholder="01XXXXXXXXX" /></div>
+                <div><label class="small">Account Type / Label</label><input id="pay-nagad-lbl" value="${esc(p.nagadLabel || "Personal / Send Money")}" /></div>
+              </div>
+              <label class="small">Nagad Instructions</label><input id="pay-nagad-note" value="${esc(p.nagadNote || "Send exact BDT amount via Nagad Send Money and submit your TrxID.")}" />
+            </div>
+
+            <div class="subcard stack-sm">
+              <strong style="color:var(--gold);">BDT — Rocket</strong>
+              <label class="checkbox-row"><input id="pay-rocket-en" type="checkbox" ${p.rocketEnabled !== false ? "checked" : ""} /> Enable Rocket</label>
+              <div class="form-grid">
+                <div><label class="small">Rocket Number</label><input id="pay-rocket-num" value="${esc(p.rocketNumber || "")}" placeholder="01XXXXXXXXX" /></div>
+                <div><label class="small">Account Type / Label</label><input id="pay-rocket-lbl" value="${esc(p.rocketLabel || "Personal / Send Money")}" /></div>
+              </div>
+              <label class="small">Rocket Instructions</label><input id="pay-rocket-note" value="${esc(p.rocketNote || "Send exact BDT amount via Rocket Send Money and submit your TrxID.")}" />
+            </div>
+
+            <div class="subcard stack-sm">
+              <strong style="color:var(--cyan);">USDT — Binance Pay / Wallet</strong>
+              <label class="checkbox-row"><input id="pay-bin-en" type="checkbox" ${p.binanceEnabled !== false ? "checked" : ""} /> Enable Binance / USDT</label>
+              <div class="form-grid">
+                <div><label class="small">Binance Pay ID</label><input id="pay-bin-id" value="${esc(p.binancePayId || "")}" placeholder="e.g. 123456789" /></div>
+                <div><label class="small">USDT Network</label><input id="pay-usdt-net" value="${esc(p.usdtNetwork || "TRC20 / BEP20")}" /></div>
+              </div>
+              <label class="small">USDT Deposit Wallet Address (Optional)</label><input id="pay-usdt-addr" value="${esc(p.usdtAddress || "")}" placeholder="TRC20 or BEP20 wallet address" />
+              <label class="small">USDT Instructions</label><input id="pay-usdt-note" value="${esc(p.usdtNote || "Send exact USDT via Binance Pay or wallet transfer, then submit your TxID / Order ID.")}" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Payment Accounts</button>
+          </form>
+        </div>
+      `;
+
+      $("payments-cfg-form").onsubmit = async (e) => {
+        e.preventDefault();
+        try {
+          await setDoc(doc(db, "settings", "payments"), {
+            bkashEnabled: $("pay-bkash-en").checked,
+            bkashNumber: $("pay-bkash-num").value.trim(),
+            bkashLabel: $("pay-bkash-lbl").value.trim(),
+            bkashNote: $("pay-bkash-note").value.trim(),
+            nagadEnabled: $("pay-nagad-en").checked,
+            nagadNumber: $("pay-nagad-num").value.trim(),
+            nagadLabel: $("pay-nagad-lbl").value.trim(),
+            nagadNote: $("pay-nagad-note").value.trim(),
+            rocketEnabled: $("pay-rocket-en").checked,
+            rocketNumber: $("pay-rocket-num").value.trim(),
+            rocketLabel: $("pay-rocket-lbl").value.trim(),
+            rocketNote: $("pay-rocket-note").value.trim(),
+            binanceEnabled: $("pay-bin-en").checked,
+            binancePayId: $("pay-bin-id").value.trim(),
+            usdtAddress: $("pay-usdt-addr").value.trim(),
+            usdtNetwork: $("pay-usdt-net").value.trim(),
+            usdtNote: $("pay-usdt-note").value.trim(),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+          await logAdminAction(store.user, "update_payment_settings", "settings", "payments", "Updated BDT & USDT payment accounts");
+          toast("Payment accounts saved live.");
+        } catch (err) {
+          toast(err.message, true);
+        }
+      };
     }
 
     function renderUsers(el) {
@@ -779,18 +1222,22 @@
             <table>
               <thead><tr><th>User</th><th>Coins</th><th>Unlocked</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
-                ${filtered.map((u) => `
-                  <tr>
-                    <td><strong>${esc(u.displayName)}</strong><br><span class="small muted">${esc(u.email)}</span><br><code class="small">${esc(u.id)}</code></td>
-                    <td><span class="pill pill-gold">${u.coinBalance ?? 0}</span></td>
-                    <td>${u.unlockedCount ?? 0}</td>
-                    <td><span class="pill ${u.accountStatus === "active" ? "pill-green" : "pill-red"}">${esc(u.accountStatus)}</span></td>
-                    <td class="actions-cell">
-                      <button class="btn btn-gold btn-sm" data-adjust-uid="${esc(u.id)}">Adjust Coins</button>
-                      <button class="btn btn-secondary btn-sm" data-toggle-status="${esc(u.id)}">${u.accountStatus === "active" ? "Ban/Disable" : "Activate"}</button>
-                    </td>
-                  </tr>
-                `).join("") || `<tr><td colspan="5" class="muted">No users found.</td></tr>`}
+                ${filtered.map((u) => {
+                  const isActive = u.accountStatus === "active";
+                  return `
+                    <tr>
+                      <td><strong>${esc(u.displayName)}</strong><br><span class="small muted">${esc(u.email)}</span><br><code class="small">${esc(u.id)}</code></td>
+                      <td><span class="pill pill-gold">${u.coinBalance ?? 0}</span></td>
+                      <td>${u.unlockedCount ?? 0}</td>
+                      <td><span class="pill ${isActive ? "pill-green" : "pill-red"}">${esc(u.accountStatus || "active")}</span></td>
+                      <td class="actions-cell">
+                        <button class="btn btn-gold btn-sm" data-adjust-uid="${esc(u.id)}">+ / - Coins</button>
+                        <button class="btn ${isActive ? "btn-secondary" : "btn-green"} btn-sm" data-toggle-status="${esc(u.id)}">${isActive ? "Ban" : "Unban"}</button>
+                        <button class="btn btn-danger btn-sm" data-delete-uid="${esc(u.id)}">Delete</button>
+                      </td>
+                    </tr>
+                  `;
+                }).join("") || `<tr><td colspan="5" class="muted">No users found.</td></tr>`}
               </tbody>
             </table>
           </div>
@@ -807,21 +1254,39 @@
       el.querySelectorAll("[data-toggle-status]").forEach((b) => {
         b.onclick = () => toggleUserStatus(b.dataset.toggleStatus);
       });
+      el.querySelectorAll("[data-delete-uid]").forEach((b) => {
+        b.onclick = () => openDeleteUserModal(b.dataset.deleteUid);
+      });
     }
 
     function openCoinAdjustModal(uid) {
       const user = store.users.find((u) => u.id === uid);
       if (!user) return;
-      showModal(`Adjust Coins: ${user.displayName}`, `
+      showModal(`Adjust Coins: ${user.displayName || user.email}`, `
         <form id="coin-adjust-form" class="stack-sm">
-          <p class="small muted">Current Balance: <strong>${user.coinBalance ?? 0} Coins</strong></p>
-          <label class="small">Delta (+ to credit, - to deduct)</label>
+          <p class="small muted">Current Balance: <strong style="color:var(--gold)">${user.coinBalance ?? 0} Coins</strong></p>
+          <div class="preset-row">
+            <button type="button" class="btn btn-green btn-sm" data-coin-preset="100">+100</button>
+            <button type="button" class="btn btn-green btn-sm" data-coin-preset="500">+500</button>
+            <button type="button" class="btn btn-green btn-sm" data-coin-preset="1000">+1000</button>
+            <button type="button" class="btn btn-danger btn-sm" data-coin-preset="-100">-100</button>
+            <button type="button" class="btn btn-danger btn-sm" data-coin-preset="-500">-500</button>
+          </div>
+          <label class="small">Coin Change (+ to add, - to deduct)</label>
           <input id="adj-amount" type="number" placeholder="e.g. 200 or -50" required />
-          <label class="small">Reason (logged in Coin History &amp; Admin Logs)</label>
-          <input id="adj-reason" type="text" placeholder="Promotional bonus / Refund" required />
-          <button type="submit" class="btn btn-primary">Apply Coin Adjustment</button>
+          <label class="small">Reason (logged in User Coin History &amp; Admin Logs)</label>
+          <input id="adj-reason" type="text" placeholder="Manual bonus / Deduction" required />
+          <button type="submit" class="btn btn-primary">Apply Coin Change</button>
         </form>
       `, () => {
+        document.querySelectorAll("[data-coin-preset]").forEach((btn) => {
+          btn.onclick = () => {
+            $("adj-amount").value = btn.dataset.coinPreset;
+            if (!$("adj-reason").value.trim()) {
+              $("adj-reason").value = Number(btn.dataset.coinPreset) > 0 ? "Admin coin credit" : "Admin coin deduction";
+            }
+          };
+        });
         $("coin-adjust-form").onsubmit = async (e) => {
           e.preventDefault();
           const amount = parseInt($("adj-amount").value, 10);
@@ -834,7 +1299,7 @@
               if (!snap.exists()) throw new Error("User not found");
               const cur = Number(snap.data().coinBalance || 0);
               const next = cur + amount;
-              if (next < 0) throw new Error("Cannot make balance negative.");
+              if (next < 0) throw new Error(`Insufficient balance (${cur}) for deduction of ${amount}.`);
               tx.update(ref, { coinBalance: next, updatedAt: serverTimestamp() });
               const txId = `adm_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
               tx.set(doc(db, "coinTransactions", txId), {
@@ -863,14 +1328,83 @@
     async function toggleUserStatus(uid) {
       const user = store.users.find((u) => u.id === uid);
       if (!user) return;
+      if (uid === store.user?.uid) {
+        return toast("You cannot ban your own signed-in admin account.", true);
+      }
       const nextStatus = user.accountStatus === "active" ? "banned" : "active";
       try {
         await updateDoc(doc(db, "users", uid), { accountStatus: nextStatus, updatedAt: serverTimestamp() });
-        await logAdminAction(store.user, "set_user_status", "user", uid, `Set accountStatus=${nextStatus}`);
-        toast(`User marked ${nextStatus}.`);
+        await logAdminAction(store.user, nextStatus === "banned" ? "ban_user" : "unban_user", "user", uid, `Set accountStatus=${nextStatus}`);
+        toast(nextStatus === "banned" ? "User banned successfully." : "User unbanned (active).");
       } catch (err) {
         toast(err.message, true);
       }
+    }
+
+    function openDeleteUserModal(uid) {
+      const user = store.users.find((u) => u.id === uid);
+      if (!user) return;
+      if (uid === store.user?.uid) {
+        return toast("You cannot delete your own active admin account.", true);
+      }
+      showModal("Delete User Permanently?", `
+        <div class="stack-sm">
+          <p class="small muted">This deletes <strong>${esc(user.displayName || user.email)}</strong> (<code>${esc(uid)}</code>), their coin wallet, unlocked match history, deposit requests, and (when Cloud Functions are deployed) their Firebase Auth user.</p>
+          <div class="actions-cell" style="justify-content:flex-end;">
+            <button id="cancel-del-user" type="button" class="btn btn-secondary">Cancel</button>
+            <button id="confirm-del-user" type="button" class="btn btn-danger">Delete User Forever</button>
+          </div>
+        </div>
+      `, () => {
+        $("cancel-del-user").onclick = closeModal;
+        $("confirm-del-user").onclick = async () => {
+          const btn = $("confirm-del-user");
+          btn.disabled = true;
+          btn.textContent = "Deleting...";
+          try {
+            let deletedViaCallable = false;
+            try {
+              const fn = httpsCallable(functions, "adminDeleteUser");
+              await fn({ uid });
+              deletedViaCallable = true;
+            } catch (fnErr) {
+              console.warn("Callable adminDeleteUser unavailable, deleting via Firestore client SDK:", fnErr);
+            }
+
+            if (!deletedViaCallable) {
+              const userRef = doc(db, "users", uid);
+              const [unlockedSnap, readNotifSnap, txSnap, depSnap, pvSnap] = await Promise.all([
+                getDocs(collection(db, "users", uid, "unlockedMatches")),
+                getDocs(collection(db, "users", uid, "readNotifications")),
+                getDocs(query(collection(db, "coinTransactions"), where("userId", "==", uid))),
+                getDocs(query(collection(db, "depositRequests"), where("userId", "==", uid))),
+                getDocs(query(collection(db, "purchaseVerifications"), where("userId", "==", uid))),
+              ]);
+              const refs = [
+                ...unlockedSnap.docs.map((d) => d.ref),
+                ...readNotifSnap.docs.map((d) => d.ref),
+                ...txSnap.docs.map((d) => d.ref),
+                ...depSnap.docs.map((d) => d.ref),
+                ...pvSnap.docs.map((d) => d.ref),
+                userRef,
+              ];
+              for (let i = 0; i < refs.length; i += 400) {
+                const batch = writeBatch(db);
+                refs.slice(i, i + 400).forEach((r) => batch.delete(r));
+                await batch.commit();
+              }
+              await logAdminAction(store.user, "delete_user", "user", uid, `Deleted Firestore user and ${refs.length} related records`);
+            }
+
+            closeModal();
+            toast("User deleted permanently.");
+          } catch (err) {
+            btn.disabled = false;
+            btn.textContent = "Delete User Forever";
+            toast(err.message || "Failed to delete user.", true);
+          }
+        };
+      });
     }
 
     function renderMatches(el) {
@@ -1103,19 +1637,19 @@
       el.innerHTML = `
         <div class="panel-card">
           <div class="panel-header">
-            <h3 style="margin:0;">Google Play Coin Packages (${sorted.length})</h3>
+            <h3 style="margin:0;">Dual-Currency Coin Packages (${sorted.length})</h3>
             <button id="add-pkg-btn" class="btn btn-gold">+ Add Package</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Title</th><th>Coins</th><th>Play Product SKU</th><th>Fallback Price</th><th>Visible</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Title</th><th>Coins</th><th>BDT Price</th><th>USDT Price</th><th>Visible</th><th>Actions</th></tr></thead>
               <tbody>
                 ${sorted.map((p) => `
                   <tr>
                     <td><strong>${esc(p.title)}</strong> ${p.badgeText ? `<span class="pill pill-gold">${esc(p.badgeText)}</span>` : ""}</td>
                     <td>${p.coins}</td>
-                    <td><code>${esc(p.productId)}</code></td>
-                    <td>${esc(p.displayPrice)}</td>
+                    <td><span class="pill pill-cyan">${esc(p.priceBdt || p.displayPrice)}</span></td>
+                    <td><span class="pill pill-green">${esc(p.priceUsdt || p.displayPrice)}</span></td>
                     <td>${p.isVisible ? "Yes" : "Hidden"}</td>
                     <td class="actions-cell">
                       <button class="btn btn-secondary btn-sm" data-edit-pkg="${esc(p.id)}">Edit</button>
@@ -1146,8 +1680,11 @@
         <form id="pkg-form" class="stack-sm">
           <label class="small">Title (e.g. 500 Coins)</label><input id="p-title" value="${esc(existing?.title || "")}" required />
           <label class="small">Coins Amount</label><input id="p-coins" type="number" min="1" value="${existing?.coins ?? 500}" required />
-          <label class="small">Google Play In-App Product ID</label><input id="p-sku" value="${esc(existing?.productId || "YOUR_PLAY_PRODUCT_ID_500")}" required />
-          <label class="small">Fallback Display Price</label><input id="p-price" value="${esc(existing?.displayPrice || "$4.99")}" required />
+          <div class="form-grid">
+            <div><label class="small">BDT Price (e.g. 580 BDT)</label><input id="p-bdt" value="${esc(existing?.priceBdt || "580 BDT")}" required /></div>
+            <div><label class="small">USDT Price (e.g. 5.00 USDT)</label><input id="p-usdt" value="${esc(existing?.priceUsdt || existing?.displayPrice || "5.00 USDT")}" required /></div>
+          </div>
+          <label class="small">Package Code / SKU</label><input id="p-sku" value="${esc(existing?.productId || "ff_coins_500")}" required />
           <label class="small">Badge Text (optional)</label><input id="p-badge" value="${esc(existing?.badgeText || "")}" />
           <label class="small">Sort Order</label><input id="p-order" type="number" value="${existing?.sortOrder ?? 1}" />
           <label class="checkbox-row"><input id="p-vis" type="checkbox" ${existing?.isVisible !== false ? "checked" : ""} /> Visible in Coin Store</label>
@@ -1156,12 +1693,17 @@
       `, () => {
         $("pkg-form").onsubmit = async (e) => {
           e.preventDefault();
-          const id = existing?.id || `pkg_${$("p-coins").value}`;
+          const coins = parseInt($("p-coins").value, 10);
+          const id = existing?.id || `pkg_${coins}_${Date.now().toString(36).slice(-4)}`;
+          const usdtPrice = $("p-usdt").value.trim();
+          const bdtPrice = $("p-bdt").value.trim();
           await setDoc(doc(db, "coinPackages", id), {
             title: $("p-title").value.trim(),
-            coins: parseInt($("p-coins").value, 10),
+            coins,
             productId: $("p-sku").value.trim(),
-            displayPrice: $("p-price").value.trim(),
+            displayPrice: usdtPrice,
+            priceBdt: bdtPrice,
+            priceUsdt: usdtPrice,
             badgeText: $("p-badge").value.trim() || null,
             sortOrder: parseInt($("p-order").value || "1", 10),
             isVisible: $("p-vis").checked,
@@ -1176,26 +1718,6 @@
 
     function renderTransactions(el) {
       el.innerHTML = `
-        <div class="panel-card" style="margin-bottom:20px;">
-          <h3>Play Purchase Verifications (${store.verifications.length})</h3>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>User ID</th><th>Product</th><th>Coins</th><th>Order ID</th><th>Status</th></tr></thead>
-              <tbody>
-                ${store.verifications.map((v) => `
-                  <tr>
-                    <td><code class="small">${esc(v.userId)}</code></td>
-                    <td>${esc(v.productId)}</td>
-                    <td>${v.coins}</td>
-                    <td>${esc(v.orderId || "-")}</td>
-                    <td><span class="pill ${v.status === "verified" ? "pill-green" : "pill-gold"}">${esc(v.status)}</span></td>
-                  </tr>
-                `).join("") || `<tr><td colspan="5" class="muted">No Play purchase verifications recorded yet.</td></tr>`}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <div class="panel-card">
           <h3>Coin Ledger (${store.transactions.length})</h3>
           <div class="table-wrap">
@@ -1443,7 +1965,7 @@
           <h3>App Identity, Share Link, Version Gate &amp; Maintenance</h3>
           <form id="app-cfg-form" class="stack-sm">
             <div class="form-grid">
-              <div><label class="small">App Name</label><input id="a-name" value="${esc(a.appName || "Tips King")}" /></div>
+              <div><label class="small">App Name</label><input id="a-name" value="${esc(a.appName || "Football Fixed")}" /></div>
               <div><label class="small">Slider Interval (ms)</label><input id="a-s-int" type="number" value="${a.sliderIntervalMs ?? 4500}" /></div>
               <div><label class="small">Latest Version Name</label><input id="a-vname" value="${esc(a.currentVersionName || "1.0")}" /></div>
               <div><label class="small">Latest Version Code</label><input id="a-vcode" type="number" value="${a.currentVersionCode ?? 1}" /></div>
@@ -1451,7 +1973,7 @@
               <div><label class="small">Minimum Supported Version Name</label><input id="a-min-name" value="${esc(a.minSupportedVersionName || "1.0")}" /></div>
             </div>
             <label class="small">Play Store / App Share URL</label><input id="a-url" value="${esc(a.updateUrl || "https://play.google.com/store/apps/details?id=com.aistudio.bdtipsking.kxmpzq")}" />
-            <label class="small">Share App Message</label><input id="a-share" value="${esc(a.shareMessage || "Check out Tips King for daily global football match insights & VIP tips!")}" />
+            <label class="small">Share App Message</label><input id="a-share" value="${esc(a.shareMessage || "Check out Football Fixed for daily global football match insights & VIP tips!")}" />
             <label class="small">Force Update Message</label><textarea id="a-umsg">${esc(a.updateMessage || "")}</textarea>
             <label class="checkbox-row"><input id="a-slider-en" type="checkbox" ${a.sliderEnabled !== false ? "checked" : ""} /> Home Slider Enabled</label>
             <label class="checkbox-row"><input id="a-maint" type="checkbox" ${a.maintenanceMode ? "checked" : ""} /> Maintenance Mode Enabled</label>
@@ -1541,6 +2063,7 @@
     function renderAnalytics(el) {
       const won = store.matches.filter((m) => m.status === "WON").length;
       const lost = store.matches.filter((m) => m.status === "LOST").length;
+      const approvedDeposits = store.deposits.filter((d) => d.status === "approved").length;
       const totalWalletCoins = store.users.reduce((a, u) => a + Number(u.coinBalance || 0), 0);
       const totalSpent = store.users.reduce((a, u) => a + Number(u.totalCoinsSpent || 0), 0);
 
@@ -1548,8 +2071,8 @@
         <div class="stats-grid">
           <div class="stat-card"><div class="stat-label">Total Wallet Liability (Coins)</div><div class="stat-value">${totalWalletCoins}</div></div>
           <div class="stat-card"><div class="stat-label">Total Coins Spent on VIP</div><div class="stat-value">${totalSpent}</div></div>
-          <div class="stat-card"><div class="stat-label">Matches Won</div><div class="stat-value">${won}</div></div>
-          <div class="stat-card"><div class="stat-label">Matches Lost</div><div class="stat-value">${lost}</div></div>
+          <div class="stat-card"><div class="stat-label">Approved Deposits</div><div class="stat-value">${approvedDeposits}</div></div>
+          <div class="stat-card"><div class="stat-label">Matches Won / Lost</div><div class="stat-value">${won} / ${lost}</div></div>
         </div>
       `;
     }
